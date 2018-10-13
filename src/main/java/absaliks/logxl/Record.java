@@ -18,20 +18,12 @@
 
 package absaliks.logxl;
 
-import java.io.InputStream;
-import java.util.List;
+import java.time.Instant;
+import lombok.ToString;
 
-public class Main {
+@ToString
+public class Record {
 
-  public static void main(String[] args) throws Exception {
-    InputStream stream = Main.class.getClassLoader().getResourceAsStream("log.csv");
-    if (stream != null) {
-      long a = System.currentTimeMillis();
-      List<Record> list = new LogParser(stream).parse();
-      System.out.println("Records count: " + list.size());
-      System.out.println("Elapsed time:  " + (System.currentTimeMillis() - a));
-    } else {
-      System.out.println("Stream is null");
-    }
-  }
+  public Instant datetime;
+  public float[] temperature;
 }
