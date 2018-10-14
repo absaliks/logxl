@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl;
+package absaliks.logxl.log;
 
 import static java.util.Objects.nonNull;
 
@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LogParser {
 
-  private static final int AVG_DATE_LINE_SIZE = 150;
+  private static final int AVG_DATE_LINE_SIZE = 140;
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter
       .ofPattern("yyyy.MM.dd_HH:mm:ss")
       .withZone(ZoneId.systemDefault());

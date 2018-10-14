@@ -16,14 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl;
+package absaliks.logxl.log;
 
 import java.time.Instant;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
+@EqualsAndHashCode
 public class Record {
-
   public Instant datetime;
   public float[] temperature;
 }

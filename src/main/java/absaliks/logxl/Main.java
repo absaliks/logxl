@@ -18,6 +18,8 @@
 
 package absaliks.logxl;
 
+import absaliks.logxl.log.LogParser;
+import absaliks.logxl.log.Record;
 import java.io.InputStream;
 import java.util.List;
 
