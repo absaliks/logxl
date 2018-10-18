@@ -24,7 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -65,10 +65,10 @@ public class LogParser {
   private Record parseDataLine(String line) {
     String[] fields = StringUtils.split(line, ';');
     Record r = new Record();
-    r.datetime = FORMATTER.parse(fields[0], Instant::from);
-    r.temperature = new float[33];
+    r.datetime = FORMATTER.parse(fields[0], LocalDateTime::from);
+    r.values = new float[33];
     for (int i = 1; i < fields.length; i++) {
-      r.temperature[i - 1] = Float.parseFloat(fields[i].replace(',', '.'));
+      r.values[i - 1] = Float.parseFloat(fields[i].replace(',', '.'));
     }
     return r;
   }

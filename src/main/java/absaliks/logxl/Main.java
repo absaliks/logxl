@@ -18,22 +18,19 @@
 
 package absaliks.logxl;
 
-import absaliks.logxl.log.LogParser;
-import absaliks.logxl.log.Record;
-import java.io.InputStream;
-import java.util.List;
+import absaliks.logxl.report.ReportService;
+import java.io.IOException;
 
 public class Main {
 
-  public static void main(String[] args) throws Exception {
-    InputStream stream = Main.class.getClassLoader().getResourceAsStream("log.csv");
-    if (stream != null) {
-      long a = System.currentTimeMillis();
-      List<Record> list = new LogParser(stream).parse();
-      System.out.println("Records count: " + list.size());
-      System.out.println("Elapsed time:  " + (System.currentTimeMillis() - a));
-    } else {
-      System.out.println("Stream is null");
-    }
+  static {
+    System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tT %4$s: %5$s %6$s%n");
+  }
+
+  private static final Factory factory = new Factory();
+
+  public static void main(String[] args) throws IOException {
+    ReportService reportService = factory.createReportService();
+    reportService.createReport();
   }
 }

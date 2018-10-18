@@ -18,14 +18,6 @@
 
 package absaliks.logxl.log;
 
-import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-@ToString
-@EqualsAndHashCode
-public class Record {
-
-  public LocalDateTime datetime;
-  public float[] values;
+public enum LogsSource {
+  FTP, LOCAL_DIR
 }

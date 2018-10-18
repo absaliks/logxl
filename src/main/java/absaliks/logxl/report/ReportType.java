@@ -16,16 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.log;
+package absaliks.logxl.report;
 
-import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import lombok.RequiredArgsConstructor;
 
-@ToString
-@EqualsAndHashCode
-public class Record {
+@RequiredArgsConstructor
+public enum ReportType {
+  MINUTELY(ChronoUnit.MINUTES, ChronoField.MINUTE_OF_HOUR),
+  HOURLY(ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY),
+  DAILY(ChronoUnit.DAYS, ChronoField.DAY_OF_MONTH);
 
-  public LocalDateTime datetime;
-  public float[] values;
+  public final TemporalUnit relatedTemporalUnit;
+  public final ChronoField relatedChronoField;
 }

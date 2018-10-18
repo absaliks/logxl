@@ -16,16 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.log;
+package absaliks.logxl.config;
 
+import absaliks.logxl.log.LogsSource;
+import absaliks.logxl.report.ReportType;
 import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@ToString
-@EqualsAndHashCode
-public class Record {
+@ToString(exclude = "ftpPassword")
+public class Config {
 
-  public LocalDateTime datetime;
-  public float[] values;
+  public ReportType reportType;
+  public LocalDateTime dateFrom;
+  public LocalDateTime dateTo;
+  public LogsSource logsSource;
+
+  public String ftpServer;
+  public int ftpPort;
+  public String ftpLogin;
+  public String ftpPassword;
+  public String ftpDirectory;
+
+  public String master;
+  public String phone;
 }

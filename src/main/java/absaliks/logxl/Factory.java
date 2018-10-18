@@ -16,16 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.log;
+package absaliks.logxl;
 
-import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import absaliks.logxl.config.Config;
+import absaliks.logxl.config.ConfigSerializer;
+import absaliks.logxl.ftp.FtpFileSource;
+import absaliks.logxl.log.LogsSource;
+import absaliks.logxl.report.LogFileSource;
+import absaliks.logxl.report.ReportService;
 
-@ToString
-@EqualsAndHashCode
-public class Record {
+public class Factory {
 
-  public LocalDateTime datetime;
-  public float[] values;
+  private Config config;
+
+  Factory() {
+    config = new ConfigSerializer().load();
+  }
+
+  private LogFileSource createLogFileSource() {
+    if (config.logsSource == LogsSource.FTP) {
+      return new FtpFileSource(config);
+    }
+    throw new UnsupportedOperationException();
+  }
+
+  public ReportService createReportService() {
+    return new ReportService(config, createLogFileSource());
+  }
 }

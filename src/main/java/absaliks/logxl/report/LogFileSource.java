@@ -16,16 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.log;
+package absaliks.logxl.report;
 
-import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.io.File;
+import java.util.List;
 
-@ToString
-@EqualsAndHashCode
-public class Record {
+public interface LogFileSource {
 
-  public LocalDateTime datetime;
-  public float[] values;
+  void initialize();
+
+  List<String> getFileList();
+
+  File getFile(String filename);
+
+  void destroy();
 }

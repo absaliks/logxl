@@ -16,16 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.log;
+package absaliks.logxl.config;
 
-import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+interface ConfigProperties {
 
-@ToString
-@EqualsAndHashCode
-public class Record {
+  // ReportParams
+  String REPORT_TYPE = "reportType";
+  String DATE_FROM = "dateFrom";
+  String DATE_TO = "dateTo";
+  String LOGS_SOURCE = "logsSource";
 
-  public LocalDateTime datetime;
-  public float[] values;
+  //FTP ConnectionProperties
+  String FTP_SERVER_NAME = "ftpServerName";
+  String FTP_PORT = "ftpPort";
+  String FTP_LOGIN = "ftpLogin";
+  String FTP_PASSWORD = "ftpPassword";
+  String FTP_DIRECTORY = "ftpDirectory";
+
+  // Metadata
+  String MASTER = "master";
+  String PHONE = "phone";
 }

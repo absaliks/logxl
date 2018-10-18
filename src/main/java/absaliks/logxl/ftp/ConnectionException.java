@@ -16,16 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.log;
+package absaliks.logxl.ftp;
 
-import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+public class ConnectionException extends RuntimeException {
 
-@ToString
-@EqualsAndHashCode
-public class Record {
-
-  public LocalDateTime datetime;
-  public float[] values;
+  public ConnectionException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
