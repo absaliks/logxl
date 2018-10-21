@@ -25,23 +25,31 @@ import static absaliks.logxl.config.ConfigProperties.FTP_LOGIN;
 import static absaliks.logxl.config.ConfigProperties.FTP_PASSWORD;
 import static absaliks.logxl.config.ConfigProperties.FTP_PORT;
 import static absaliks.logxl.config.ConfigProperties.FTP_SERVER_NAME;
+import static absaliks.logxl.config.ConfigProperties.LOCAL_DIRECTORY;
 import static absaliks.logxl.config.ConfigProperties.LOGS_SOURCE;
-import static absaliks.logxl.config.ConfigProperties.MASTER;
-import static absaliks.logxl.config.ConfigProperties.PHONE;
 import static absaliks.logxl.config.ConfigProperties.REPORT_TYPE;
+import static absaliks.logxl.config.ConfigProperties.USER_NAME;
+import static absaliks.logxl.config.ConfigProperties.USER_PHONE;
 
 import absaliks.logxl.log.LogsSource;
 import absaliks.logxl.report.ReportType;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.logging.Level;
 import lombok.extern.java.Log;
+import lombok.val;
 
 @Log
 public class ConfigSerializer {
+
+  private static final String PROPERTY_FILE_COMMENTS =
+      "reportType:   {MINUTELY, HOURLY, DAILY}\n" +
+          "date format:  1970-12-31T23:59:59";
 
   private static final String CONFIG_FILE_PATH =
       System.getProperty("user.dir") + System.getProperty("file.separator") + "config.properties";
@@ -49,17 +57,16 @@ public class ConfigSerializer {
   public Config load() {
     if (!new File(CONFIG_FILE_PATH).exists()) {
       log.info("Конфигурационный файл не найден: " + CONFIG_FILE_PATH);
-      throw new RuntimeException();
+      return new Config();
     }
 
     Properties properties = new Properties();
-    try (InputStream input = new FileInputStream(CONFIG_FILE_PATH)) {
-      properties.load(input);
+    try (InputStream stream = new FileInputStream(CONFIG_FILE_PATH)) {
+      properties.load(stream);
       return mapPropertiesToConfig(properties);
     } catch (Exception e) {
-      //TODO Make configuration optional
-      log.log(Level.SEVERE, "Не удалось прочесть файл " + CONFIG_FILE_PATH, e);
-      throw new RuntimeException(e);
+      log.log(Level.WARNING, "Не удалось прочесть файл " + CONFIG_FILE_PATH, e);
+      return new Config();
     }
   }
 
@@ -70,15 +77,46 @@ public class ConfigSerializer {
     c.dateTo = LocalDateTime.parse(properties.getProperty(DATE_TO));
     c.logsSource = LogsSource.valueOf(properties.getProperty(LOGS_SOURCE));
 
+    c.localDirectory = properties.getProperty(LOCAL_DIRECTORY);
+    c.ftpDirectory = properties.getProperty(FTP_DIRECTORY);
+
     c.ftpServer = properties.getProperty(FTP_SERVER_NAME);
     c.ftpPort = Integer.parseInt(properties.getProperty(FTP_PORT));
     c.ftpLogin = properties.getProperty(FTP_LOGIN);
     c.ftpPassword = properties.getProperty(FTP_PASSWORD);
-    c.ftpDirectory = properties.getProperty(FTP_DIRECTORY);
 
-    c.master = properties.getProperty(MASTER);
-    c.phone = properties.getProperty(PHONE);
+    c.userName = properties.getProperty(USER_NAME);
+    c.userPhone = properties.getProperty(USER_PHONE);
     return c;
+  }
+
+  public void save(Config config) {
+    try (OutputStream stream = new FileOutputStream(CONFIG_FILE_PATH)) {
+      val properties = mapConfigToProperties(config);
+      properties.store(stream, PROPERTY_FILE_COMMENTS);
+    } catch (Exception e) {
+      log.log(Level.WARNING, "Не удалось сохранить файл " + CONFIG_FILE_PATH, e);
+    }
+  }
+
+  private Properties mapConfigToProperties(Config config) {
+    Properties properties = new Properties();
+    properties.setProperty(REPORT_TYPE, config.reportType.name());
+    properties.setProperty(DATE_FROM, config.dateFrom.toString());
+    properties.setProperty(DATE_TO, config.dateTo.toString());
+    properties.setProperty(LOGS_SOURCE, config.logsSource.name());
+
+    properties.setProperty(LOCAL_DIRECTORY, config.localDirectory);
+    properties.setProperty(FTP_DIRECTORY, config.ftpDirectory);
+
+    properties.setProperty(FTP_SERVER_NAME, config.ftpServer);
+    properties.setProperty(FTP_PORT, Integer.toString(config.ftpPort));
+    properties.setProperty(FTP_LOGIN, config.ftpLogin);
+    properties.setProperty(FTP_PASSWORD, config.ftpPassword);
+
+    properties.setProperty(USER_NAME, config.userName);
+    properties.setProperty(USER_PHONE, config.userPhone);
+    return properties;
   }
 }
 

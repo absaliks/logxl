@@ -25,18 +25,19 @@ import lombok.ToString;
 
 @ToString(exclude = "ftpPassword")
 public class Config {
-
   public ReportType reportType;
   public LocalDateTime dateFrom;
   public LocalDateTime dateTo;
   public LogsSource logsSource;
 
+  public String localDirectory;
+  public String ftpDirectory;
+
   public String ftpServer;
   public int ftpPort;
   public String ftpLogin;
   public String ftpPassword;
-  public String ftpDirectory;
 
-  public String master;
-  public String phone;
+  public String userName;
+  public String userPhone;
 }

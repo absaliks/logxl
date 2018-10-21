@@ -16,25 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.report;
+package absaliks.logxl.ui;
 
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import lombok.RequiredArgsConstructor;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-@RequiredArgsConstructor
-public enum ReportType {
-  MINUTELY("Поминутный", ChronoUnit.MINUTES, ChronoField.MINUTE_OF_HOUR),
-  HOURLY("Часовой", ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY),
-  DAILY("Суточный", ChronoUnit.DAYS, ChronoField.DAY_OF_MONTH);
-
-  public final String description;
-  public final TemporalUnit relatedTemporalUnit;
-  public final ChronoField relatedChronoField;
+public class JFXLauncher extends Application {
 
   @Override
-  public String toString() {
-    return description;
+  public void start(Stage stage) {
+    DashboardView appView = new DashboardView();
+    Scene scene = new Scene(appView.getView());
+    stage.setTitle("LogXL");
+    stage.setScene(scene);
+    stage.show();
   }
 }

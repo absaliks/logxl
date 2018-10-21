@@ -29,8 +29,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
 
+@Log
 public class LogParser {
 
   private static final int AVG_DATE_LINE_SIZE = 140;
@@ -63,14 +65,19 @@ public class LogParser {
   }
 
   private Record parseDataLine(String line) {
-    String[] fields = StringUtils.split(line, ';');
-    Record r = new Record();
-    r.datetime = FORMATTER.parse(fields[0], LocalDateTime::from);
-    r.values = new float[33];
-    for (int i = 1; i < fields.length; i++) {
-      r.values[i - 1] = Float.parseFloat(fields[i].replace(',', '.'));
+    try {
+      String[] fields = StringUtils.split(line, ';');
+      Record r = new Record();
+      r.datetime = FORMATTER.parse(fields[0], LocalDateTime::from);
+      r.values = new float[33];
+      for (int i = 1; i < fields.length; i++) {
+        r.values[i - 1] = Float.parseFloat(fields[i].replace(',', '.'));
+      }
+      return r;
+    } catch (Exception e) {
+      log.severe("Failed to parse line: " + line);
+      throw new RuntimeException("Ошибка обработки строки: " + line);
     }
-    return r;
   }
 
   private void skipFileHeader(BufferedReader reader) throws IOException {

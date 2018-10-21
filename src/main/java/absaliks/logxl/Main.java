@@ -18,8 +18,11 @@
 
 package absaliks.logxl;
 
+import absaliks.logxl.config.Config;
 import absaliks.logxl.report.ReportService;
-import java.io.IOException;
+import absaliks.logxl.ui.JFXLauncher;
+import com.airhacks.afterburner.injection.Injector;
+import javafx.application.Application;
 
 public class Main {
 
@@ -29,8 +32,11 @@ public class Main {
 
   private static final Factory factory = new Factory();
 
-  public static void main(String[] args) throws IOException {
-    ReportService reportService = factory.createReportService();
-    reportService.createReport();
+  public static void main(String[] args) {
+    Injector.setModelOrService(Config.class, factory.getConfig());
+    Injector.setModelOrService(ReportService.class, factory.createReportService());
+
+    Application.launch(JFXLauncher.class);
+    factory.getConfigSerializer().save(factory.getConfig());
   }
 }

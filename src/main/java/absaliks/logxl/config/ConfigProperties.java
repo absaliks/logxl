@@ -19,21 +19,19 @@
 package absaliks.logxl.config;
 
 interface ConfigProperties {
-
-  // ReportParams
   String REPORT_TYPE = "reportType";
   String DATE_FROM = "dateFrom";
   String DATE_TO = "dateTo";
   String LOGS_SOURCE = "logsSource";
 
-  //FTP ConnectionProperties
+  String FTP_DIRECTORY = "ftpDirectory";
+  String LOCAL_DIRECTORY = "localDirectory";
+
   String FTP_SERVER_NAME = "ftpServerName";
   String FTP_PORT = "ftpPort";
   String FTP_LOGIN = "ftpLogin";
   String FTP_PASSWORD = "ftpPassword";
-  String FTP_DIRECTORY = "ftpDirectory";
 
-  // Metadata
-  String MASTER = "master";
-  String PHONE = "phone";
+  String USER_NAME = "userName";
+  String USER_PHONE = "userPhone";
 }

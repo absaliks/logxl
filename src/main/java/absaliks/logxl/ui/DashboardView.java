@@ -16,25 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.report;
+package absaliks.logxl.ui;
 
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import lombok.RequiredArgsConstructor;
+import com.airhacks.afterburner.views.FXMLView;
 
-@RequiredArgsConstructor
-public enum ReportType {
-  MINUTELY("Поминутный", ChronoUnit.MINUTES, ChronoField.MINUTE_OF_HOUR),
-  HOURLY("Часовой", ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY),
-  DAILY("Суточный", ChronoUnit.DAYS, ChronoField.DAY_OF_MONTH);
+public class DashboardView extends FXMLView {
 
-  public final String description;
-  public final TemporalUnit relatedTemporalUnit;
-  public final ChronoField relatedChronoField;
-
-  @Override
-  public String toString() {
-    return description;
-  }
 }

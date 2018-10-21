@@ -35,8 +35,6 @@ import org.apache.commons.net.ftp.FTPFile;
 @Log
 public class FtpFileSource implements LogFileSource {
 
-  private static final String CACHE_FOLDER = "cache";
-
   private final Config config;
   private FTPClient ftpClient = new FTPClient();
 

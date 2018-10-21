@@ -23,7 +23,6 @@ import absaliks.logxl.log.LogParser;
 import absaliks.logxl.log.Record;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -32,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.Validate;
 
@@ -46,27 +46,37 @@ public class ReportService {
   private final Config config;
   private final LogFileSource fileSource;
 
-  public void createReport() throws IOException {
+  @SneakyThrows
+  public void createReport() {
     validateConfiguration();
     ReportExporter.deleteReportFile();
-    fileSource.initialize();
+    try {
+      fileSource.initialize();
 
-    ReportBuilder builder = new ReportBuilder(config.reportType);
-    List<String> fileList = createFileList();
-    fileList.forEach(filename -> {
-      log.info("Обработка файла " + filename);
-      File logFile = fileSource.getFile(filename);
-      try (InputStream stream = new FileInputStream(logFile)) {
-        List<Record> records = new LogParser(stream).parse();
-        builder.consume(records);
-      } catch (Exception e) {
-        log.log(Level.SEVERE, "Ошибка при обработке файла " + filename, e);
+      List<String> fileList = createFileList();
+      Validate.isTrue(!fileList.isEmpty(),
+          "Не найдено ни одного файла удовлетворяющего выбранным датам");
+
+      ReportBuilder builder = new ReportBuilder(config.reportType);
+      for (String filename : fileList) {
+        log.info("Обработка файла " + filename);
+        File logFile = fileSource.getFile(filename);
+        try (InputStream stream = new FileInputStream(logFile)) {
+          List<Record> records = new LogParser(stream).parse();
+          builder.consume(records);
+        } catch (Exception e) {
+          log.log(Level.SEVERE, "Ошибка при обработке файла " + filename, e);
+          throw e;
+        }
       }
-    });
-    fileSource.destroy();
-    List<Record> results = builder.flush();
-    results.forEach(System.out::println);
-    new ReportExporter(config).export(results);
+
+      List<Record> results = builder.flush();
+      results.forEach(System.out::println);
+      new ReportExporter(config).export(results);
+    } catch (Exception e) {
+      fileSource.destroy();
+      throw e;
+    }
   }
 
   private void validateConfiguration() {
@@ -82,6 +92,7 @@ public class ReportService {
     String to = FORMATTER.format(config.dateTo) + ".csv";
 
     List<String> fileList = fileSource.getFileList();
+    Validate.isTrue(!fileList.isEmpty(), "Нет файлов в выбранной папке");
     return fileList.stream()
         .filter(name -> name.compareToIgnoreCase(from) >= 0 && name.compareToIgnoreCase(to) <= 0)
         .collect(Collectors.toList());

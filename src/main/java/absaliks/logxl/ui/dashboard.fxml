@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ LogXL is a program that reads log files from FTP and exports in Excel
+  ~ Copyright (C) 2018  Shamil Absalikov
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<BorderPane prefHeight="460.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/8.0.191"
+  xmlns:fx="http://javafx.com/fxml/1" fx:controller="absaliks.logxl.ui.DashboardPresenter">
+  <center>
+    <VBox BorderPane.alignment="CENTER">
+      <children>
+        <GridPane>
+          <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="130.0" prefWidth="130.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+          </rowConstraints>
+          <children>
+            <Label text="Мастер:"/>
+            <TextField fx:id="userName" GridPane.columnIndex="1"/>
+            <Label text="Телефон:" GridPane.rowIndex="1"/>
+            <TextField fx:id="userPhone" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+          </children>
+        </GridPane>
+        <Separator prefWidth="200.0">
+          <padding>
+            <Insets bottom="10.0" top="10.0"/>
+          </padding>
+        </Separator>
+        <Label text="Отчет">
+          <font>
+            <Font size="15.0"/>
+          </font>
+        </Label>
+        <GridPane>
+          <columnConstraints>
+            <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="295.0" minWidth="130.0"
+              prefWidth="130.0"/>
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="479.0" minWidth="210.0" prefWidth="479.0"/>
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+          </rowConstraints>
+          <children>
+            <Label text="Дата от:"/>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1">
+              <children>
+                <DatePicker fx:id="dateFrom" prefHeight="25.0" prefWidth="110.0"/>
+                <ComboBox fx:id="timeFrom" editable="true" minWidth="85.0" prefWidth="85.0"/>
+              </children>
+            </HBox>
+            <Label text="Дата до:" GridPane.rowIndex="1"/>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1"
+              GridPane.rowIndex="1">
+              <children>
+                <DatePicker fx:id="dateTo" prefHeight="25.0" prefWidth="110.0"/>
+                <ComboBox fx:id="timeTo" editable="true" minWidth="85.0" prefWidth="85.0"/>
+              </children>
+            </HBox>
+            <Label text="Форма отчета:" GridPane.rowIndex="2"/>
+            <ChoiceBox fx:id="reportType" prefWidth="200.0" GridPane.columnIndex="1"
+              GridPane.hgrow="ALWAYS" GridPane.rowIndex="2"/>
+          </children>
+        </GridPane>
+        <Separator prefWidth="200.0">
+          <padding>
+            <Insets bottom="10.0" top="10.0"/>
+          </padding>
+        </Separator>
+        <Label text="Лог файлы">
+          <font>
+            <Font size="15.0"/>
+          </font>
+          <VBox.margin>
+            <Insets/>
+          </VBox.margin>
+        </Label>
+        <GridPane>
+          <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="130.0" prefWidth="130.0"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+          </rowConstraints>
+          <children>
+            <Label text="Источник лог файлов:"/>
+            <ChoiceBox fx:id="logsSource" prefHeight="25.0" prefWidth="170.0"
+              GridPane.columnIndex="1"/>
+            <Label text="Путь к логам:" GridPane.rowIndex="1"/>
+            <TextField fx:id="directory" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="FTP сервер / порт:" GridPane.rowIndex="2"/>
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0"
+              GridPane.columnIndex="1" GridPane.rowIndex="2">
+              <children>
+                <TextField fx:id="ftpServer" minWidth="100.0" HBox.hgrow="ALWAYS"/>
+                <Spinner fx:id="ftpPort" editable="true" minWidth="50.0" prefWidth="75.0"
+                  HBox.hgrow="NEVER"/>
+              </children>
+            </HBox>
+            <Label text="FTP логин:" GridPane.rowIndex="3"/>
+            <TextField fx:id="ftpLogin" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label text="FTP пароль:" GridPane.rowIndex="4"/>
+            <PasswordField fx:id="ftpPassword" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+          </children>
+        </GridPane>
+      </children>
+    </VBox>
+  </center>
+  <padding>
+    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+  </padding>
+  <bottom>
+    <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="425.0"
+      BorderPane.alignment="CENTER">
+      <children>
+        <Button mnemonicParsing="false" onAction="#generateReport" text="Сгенерировать отчет"/>
+      </children>
+    </HBox>
+  </bottom>
+</BorderPane>

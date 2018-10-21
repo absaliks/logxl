@@ -24,23 +24,28 @@ import absaliks.logxl.ftp.FtpFileSource;
 import absaliks.logxl.log.LogsSource;
 import absaliks.logxl.report.LogFileSource;
 import absaliks.logxl.report.ReportService;
+import lombok.AccessLevel;
+import lombok.Getter;
 
-public class Factory {
+@Getter(AccessLevel.PACKAGE)
+class Factory {
 
-  private Config config;
+  private final ConfigSerializer configSerializer;
+  private final Config config;
 
   Factory() {
-    config = new ConfigSerializer().load();
+    configSerializer = new ConfigSerializer();
+    config = configSerializer.load();
   }
 
-  private LogFileSource createLogFileSource() {
+  LogFileSource createLogFileSource() {
     if (config.logsSource == LogsSource.FTP) {
       return new FtpFileSource(config);
     }
     throw new UnsupportedOperationException();
   }
 
-  public ReportService createReportService() {
+  ReportService createReportService() {
     return new ReportService(config, createLogFileSource());
   }
 }

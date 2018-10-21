@@ -85,8 +85,8 @@ public class ReportExporter {
   private void fillMetaData(XSSFWorkbook template) {
     XSSFSheet s = template.getSheetAt(0);
     // TODO: add null-guards
-    setCellValue(s.getRow(0).getCell(3), config.master);
-    s.getRow(1).getCell(3).setCellValue(config.phone);
+    setCellValue(s.getRow(0).getCell(3), config.userName);
+    s.getRow(1).getCell(3).setCellValue(config.userPhone);
   }
 
   @SneakyThrows(UnsupportedEncodingException.class)
