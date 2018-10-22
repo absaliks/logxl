@@ -31,6 +31,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -38,11 +41,12 @@ import org.apache.commons.lang3.Validate;
 
 @Log
 public class ReportService {
-
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter
       .ofPattern("yyyy.MM.dd_HH_mm")
       .withZone(ZoneId.systemDefault());
 
+  @Getter
+  private final DoubleProperty progress = new SimpleDoubleProperty();
   private final AbstractFactory factory;
   private final Config config;
 
@@ -53,6 +57,7 @@ public class ReportService {
 
   @SneakyThrows
   public void createReport() {
+    resetProgress();
     val fileSource = factory.createLogFileSource();
     validateConfiguration();
     ReportExporter.deleteReportFile();
@@ -62,9 +67,12 @@ public class ReportService {
       List<String> fileList = filterFileList(fileSource.getFileList());
       Validate.isTrue(!fileList.isEmpty(),
           "Не найдено ни одного файла удовлетворяющего выбранным датам");
+      val filesCount = fileList.size();
 
-      ReportBuilder builder = new ReportBuilder(config.reportType);
-      for (String filename : fileList) {
+      val builder = new ReportBuilder(config.reportType);
+      for (int i = 0; i < fileList.size(); i++) {
+        progress.setValue((0.0 + i) * 100 / filesCount);
+        String filename = fileList.get(i);
         log.info("Обработка файла " + filename);
         File logFile = fileSource.getFile(filename);
         try (InputStream stream = new FileInputStream(logFile)) {
@@ -83,6 +91,10 @@ public class ReportService {
       fileSource.destroy();
       throw e;
     }
+  }
+
+  private void resetProgress() {
+    progress.setValue(0);
   }
 
   private void validateConfiguration() {

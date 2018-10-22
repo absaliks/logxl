@@ -26,6 +26,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
@@ -156,10 +157,13 @@
     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
   </padding>
   <bottom>
-    <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="425.0"
+    <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="425.0" spacing="10.0"
       BorderPane.alignment="CENTER">
       <children>
-        <Button mnemonicParsing="false" onAction="#generateReport" text="Сгенерировать отчет"/>
+        <ProgressBar fx:id="progressBar" minWidth="50.0" prefWidth="300.0" progress="0.0"
+          HBox.hgrow="ALWAYS"/>
+        <Button mnemonicParsing="false" onAction="#generateReport" prefWidth="150.0"
+          text="Сгенерировать отчет" HBox.hgrow="NEVER"/>
       </children>
     </HBox>
   </bottom>

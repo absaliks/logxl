@@ -28,8 +28,12 @@ import absaliks.logxl.report.ReportType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -39,6 +43,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -50,6 +55,7 @@ import lombok.val;
 @Log
 public class DashboardPresenter {
 
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
   private static final TimeFormatter TIME_FORMATTER = new TimeFormatter();
   private static final LocalDateTime NOW = LocalDateTime.now();
 
@@ -82,6 +88,8 @@ public class DashboardPresenter {
   private TextField ftpPassword;
   @FXML
   private CheckBox savePassword;
+  @FXML
+  private ProgressBar progressBar;
 
   @Inject
   private Config config;
@@ -89,13 +97,23 @@ public class DashboardPresenter {
   @Inject
   ReportService reportService;
 
+  private Future<?> future;
+
   public void generateReport() {
-    try {
-      reportService.createReport();
-    } catch (Exception e) {
-      log.log(Level.SEVERE, "Не удалось создать отчет. " + config, e);
-      showError("Не удалось создать отчет", e.getMessage());
+    if (future != null) {
+      showAlert(AlertType.INFORMATION, null, "Дождитесь окончания генерации текущего отчета");
     }
+    future = executor.submit(() -> {
+      try {
+        reportService.createReport();
+      } catch (Exception e) {
+        log.log(Level.SEVERE, "Unable to create a report with settings " + config, e);
+        Platform
+            .runLater(() -> showAlert(AlertType.ERROR, "Не удалось создать отчет", e.getMessage()));
+      } finally {
+        future = null;
+      }
+    });
   }
 
   @FXML
@@ -111,6 +129,7 @@ public class DashboardPresenter {
     initUserNameControl();
     initPhoneControl();
     initSavePasswordCheckbox();
+    progressBar.progressProperty().bind(reportService.getProgress());
     refreshFTPControlsAvailability();
   }
 
@@ -236,8 +255,8 @@ public class DashboardPresenter {
     userPhone.textProperty().addListener(e -> config.userPhone = userPhone.getText());
   }
 
-  public static void showError(String title, String text) {
-    Alert alert = new Alert(AlertType.ERROR, text);
+  private static void showAlert(AlertType alertType, String title, String text) {
+    Alert alert = new Alert(alertType, text);
     alert.setTitle(title);
     alert.setHeaderText(null);
     alert.showAndWait();
