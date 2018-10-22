@@ -71,7 +71,6 @@ public class ReportService {
 
       val builder = new ReportBuilder(config.reportType);
       for (int i = 0; i < fileList.size(); i++) {
-        progress.setValue((0.0 + i) * 100 / filesCount);
         String filename = fileList.get(i);
         log.info("Обработка файла " + filename);
         File logFile = fileSource.getFile(filename);
@@ -82,6 +81,7 @@ public class ReportService {
           log.log(Level.SEVERE, "Ошибка при обработке файла " + filename, e);
           throw e;
         }
+        progress.setValue((1.0 + i) * 100 / filesCount);
       }
 
       List<Record> results = builder.flush();

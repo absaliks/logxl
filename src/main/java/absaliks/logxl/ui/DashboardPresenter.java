@@ -95,7 +95,7 @@ public class DashboardPresenter {
   private Config config;
 
   @Inject
-  ReportService reportService;
+  private ReportService reportService;
 
   private Future<?> future;
 
@@ -196,12 +196,8 @@ public class DashboardPresenter {
 
   private void setDateValue(DatePicker datePicker,
       ComboBox<String> timeFrom, LocalDateTime date) {
-    if (date != null) {
-      datePicker.setValue(date.toLocalDate());
-      timeFrom.setValue(TIME_FORMATTER.format(date.toLocalTime()));
-    } else {
-      datePicker.setValue(NOW.toLocalDate());
-    }
+    datePicker.setValue(date.toLocalDate());
+    timeFrom.setValue(TIME_FORMATTER.format(date.toLocalTime()));
   }
 
   private void initFtpPortControl() {

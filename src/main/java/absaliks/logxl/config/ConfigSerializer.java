@@ -39,7 +39,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Properties;
 import java.util.logging.Level;
 import lombok.extern.java.Log;
@@ -56,12 +58,13 @@ public class ConfigSerializer {
 
   private static final String CONFIG_FILE_PATH =
       System.getProperty("user.dir") + System.getProperty("file.separator") + "config.properties";
-  public static final int DEFAULT_FTP_PORT = 21;
+  private static final int DEFAULT_FTP_PORT = 21;
+  private static final LocalDate TODAY = LocalDate.now();
 
   public Config load() {
     if (!new File(CONFIG_FILE_PATH).exists()) {
       log.info("Конфигурационный файл не найден: " + CONFIG_FILE_PATH);
-      return new Config();
+      return getDefaultConfig();
     }
 
     Properties properties = new Properties();
@@ -70,16 +73,25 @@ public class ConfigSerializer {
       return mapPropertiesToConfig(properties);
     } catch (Exception e) {
       log.log(Level.WARNING, "Не удалось прочесть файл " + CONFIG_FILE_PATH, e);
-      return new Config();
+      return getDefaultConfig();
     }
   }
 
+  private Config getDefaultConfig() {
+    Config config = new Config();
+    config.dateFrom = LocalDateTime.of(TODAY, LocalTime.MIN);
+    config.dateTo = LocalDateTime.of(TODAY, LocalTime.of(23, 59, 59));
+    config.reportType = ReportType.DAILY;
+    config.logsSource = LogsSource.FTP;
+    return config;
+  }
+
   private Config mapPropertiesToConfig(Properties properties) {
-    Config c = new Config();
-    c.reportType = ReportType.valueOf(properties.getProperty(REPORT_TYPE));
-    c.dateFrom = LocalDateTime.parse(properties.getProperty(DATE_FROM));
-    c.dateTo = LocalDateTime.parse(properties.getProperty(DATE_TO));
-    c.logsSource = LogsSource.valueOf(properties.getProperty(LOGS_SOURCE));
+    Config c = getDefaultConfig();
+    c.reportType = getEnum(ReportType.class, properties.getProperty(REPORT_TYPE), c.reportType);
+    c.dateFrom = parseDateTime(properties.getProperty(DATE_FROM), c.dateFrom);
+    c.dateTo = parseDateTime(properties.getProperty(DATE_TO), c.dateTo);
+    c.logsSource = getEnum(LogsSource.class, properties.getProperty(LOGS_SOURCE), c.logsSource);
 
     c.localDirectory = properties.getProperty(LOCAL_DIRECTORY);
     c.ftpDirectory = properties.getProperty(FTP_DIRECTORY);
@@ -96,6 +108,23 @@ public class ConfigSerializer {
     return c;
   }
 
+  public <E extends Enum<E>> E getEnum(final Class<E> enumClass, final String enumName,
+      E defaultValue) {
+    try {
+      return Enum.valueOf(enumClass, enumName);
+    } catch (final Exception e) {
+      return defaultValue;
+    }
+  }
+
+  private LocalDateTime parseDateTime(String text, LocalDateTime defaultValue) {
+    try {
+      return LocalDateTime.parse(text);
+    } catch (Exception e) {
+      return defaultValue;
+    }
+  }
+
   public void save(Config config) {
     try (OutputStream stream = new FileOutputStream(CONFIG_FILE_PATH)) {
       val properties = mapConfigToProperties(config);
@@ -106,7 +135,7 @@ public class ConfigSerializer {
   }
 
   private Properties mapConfigToProperties(Config config) {
-    Properties properties = new Properties();
+    Properties properties = new NullIgnoringProperties();
     properties.setProperty(REPORT_TYPE, config.reportType.name());
     properties.setProperty(DATE_FROM, config.dateFrom.toString());
     properties.setProperty(DATE_TO, config.dateTo.toString());
