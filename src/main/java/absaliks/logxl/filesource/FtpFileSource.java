@@ -16,10 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.ftp;
+package absaliks.logxl.filesource;
 
 import absaliks.logxl.config.Config;
-import absaliks.logxl.report.LogFileSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -98,6 +97,7 @@ public class FtpFileSource implements LogFileSource {
   private void tryConnect() {
     try {
       ftpClient.connect(config.ftpServer, config.ftpPort);
+      ftpClient.enterLocalPassiveMode();
       log.info("Подключение к FTP серверу - ОК");
     } catch (IOException e) {
       tryDisconnect();

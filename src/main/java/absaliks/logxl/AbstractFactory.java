@@ -19,24 +19,17 @@
 package absaliks.logxl;
 
 import absaliks.logxl.config.Config;
+import absaliks.logxl.config.ConfigSerializer;
+import absaliks.logxl.filesource.LogFileSource;
 import absaliks.logxl.report.ReportService;
-import absaliks.logxl.ui.JFXLauncher;
-import com.airhacks.afterburner.injection.Injector;
-import javafx.application.Application;
 
-public class Main {
+public interface AbstractFactory {
 
-  static {
-    System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tT %4$s: %5$s %6$s%n");
-  }
+  ConfigSerializer getConfigSerializer();
 
-  private static final AbstractFactory factory = new Factory();
+  Config getConfig();
 
-  public static void main(String[] args) {
-    Injector.setModelOrService(Config.class, factory.getConfig());
-    Injector.setModelOrService(ReportService.class, factory.createReportService());
+  LogFileSource createLogFileSource();
 
-    Application.launch(JFXLauncher.class);
-    factory.getConfigSerializer().save(factory.getConfig());
-  }
+  ReportService createReportService();
 }

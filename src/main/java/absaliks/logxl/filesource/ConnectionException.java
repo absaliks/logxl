@@ -16,18 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.report;
+package absaliks.logxl.filesource;
 
-import java.io.File;
-import java.util.List;
+public class ConnectionException extends RuntimeException {
 
-public interface LogFileSource {
-
-  void initialize();
-
-  List<String> getFileList();
-
-  File getFile(String filename);
-
-  void destroy();
+  public ConnectionException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

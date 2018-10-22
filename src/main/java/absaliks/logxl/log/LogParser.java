@@ -29,6 +29,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,11 +41,15 @@ public class LogParser {
       .ofPattern("yyyy.MM.dd_HH:mm:ss")
       .withZone(ZoneId.systemDefault());
 
-  private InputStream stream;
+  private final InputStream stream;
+  private final LocalDateTime from;
+  private final LocalDateTime to;
   private int approxLinesCount;
 
-  public LogParser(InputStream stream) {
+  public LogParser(InputStream stream, LocalDateTime from, LocalDateTime to) {
     this.stream = stream;
+    this.from = from;
+    this.to = to;
   }
 
   public List<Record> parse() throws IOException {
@@ -59,7 +64,10 @@ public class LogParser {
     ArrayList<Record> records = new ArrayList<>(approxLinesCount);
     String line;
     while (nonNull(line = reader.readLine())) {
-      records.add(parseDataLine(line));
+      Record rec = parseDataLine(line);
+      if (rec != null) {
+        records.add(rec);
+      }
     }
     return records;
   }
@@ -67,8 +75,14 @@ public class LogParser {
   private Record parseDataLine(String line) {
     try {
       String[] fields = StringUtils.split(line, ';');
+      LocalDateTime datetime = FORMATTER.parse(fields[0], LocalDateTime::from);
+      if (datetime.isBefore(from) || datetime.isAfter(to)) {
+        log.log(Level.FINE, "Skipping line that outside of time period: {}", line);
+        return null;
+      }
+
       Record r = new Record();
-      r.datetime = FORMATTER.parse(fields[0], LocalDateTime::from);
+      r.datetime = datetime;
       r.values = new float[33];
       for (int i = 1; i < fields.length; i++) {
         r.values[i - 1] = Float.parseFloat(fields[i].replace(',', '.'));

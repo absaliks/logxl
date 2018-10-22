@@ -16,11 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.ftp;
+package absaliks.logxl.filesource;
 
-public class ConnectionException extends RuntimeException {
+import java.io.File;
+import java.util.List;
 
-  public ConnectionException(String message, Throwable cause) {
-    super(message, cause);
-  }
+public interface LogFileSource {
+
+  void initialize();
+
+  List<String> getFileList();
+
+  File getFile(String filename);
+
+  void destroy();
 }

@@ -38,6 +38,8 @@ public class Config {
   public String ftpLogin;
   public String ftpPassword;
 
+  public boolean savePassword;
+
   public String userName;
   public String userPhone;
 }

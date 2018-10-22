@@ -20,16 +20,15 @@ package absaliks.logxl;
 
 import absaliks.logxl.config.Config;
 import absaliks.logxl.config.ConfigSerializer;
-import absaliks.logxl.ftp.FtpFileSource;
-import absaliks.logxl.log.LogsSource;
-import absaliks.logxl.report.LogFileSource;
+import absaliks.logxl.filesource.FtpFileSource;
+import absaliks.logxl.filesource.LocalFileSource;
+import absaliks.logxl.filesource.LogFileSource;
 import absaliks.logxl.report.ReportService;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-@Getter(AccessLevel.PACKAGE)
-class Factory {
-
+@Getter(AccessLevel.PUBLIC)
+class Factory implements AbstractFactory {
   private final ConfigSerializer configSerializer;
   private final Config config;
 
@@ -38,14 +37,19 @@ class Factory {
     config = configSerializer.load();
   }
 
-  LogFileSource createLogFileSource() {
-    if (config.logsSource == LogsSource.FTP) {
-      return new FtpFileSource(config);
+  @Override
+  public LogFileSource createLogFileSource() {
+    switch (config.logsSource) {
+      case FTP:
+        return new FtpFileSource(config);
+      case LOCAL_DIR:
+        return new LocalFileSource(config.localDirectory);
     }
     throw new UnsupportedOperationException();
   }
 
-  ReportService createReportService() {
-    return new ReportService(config, createLogFileSource());
+  @Override
+  public ReportService createReportService() {
+    return new ReportService(this);
   }
 }

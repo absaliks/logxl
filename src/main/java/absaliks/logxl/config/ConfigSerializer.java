@@ -28,6 +28,7 @@ import static absaliks.logxl.config.ConfigProperties.FTP_SERVER_NAME;
 import static absaliks.logxl.config.ConfigProperties.LOCAL_DIRECTORY;
 import static absaliks.logxl.config.ConfigProperties.LOGS_SOURCE;
 import static absaliks.logxl.config.ConfigProperties.REPORT_TYPE;
+import static absaliks.logxl.config.ConfigProperties.SAVE_PASSWORD;
 import static absaliks.logxl.config.ConfigProperties.USER_NAME;
 import static absaliks.logxl.config.ConfigProperties.USER_PHONE;
 
@@ -43,6 +44,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import lombok.extern.java.Log;
 import lombok.val;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 @Log
 public class ConfigSerializer {
@@ -53,6 +56,7 @@ public class ConfigSerializer {
 
   private static final String CONFIG_FILE_PATH =
       System.getProperty("user.dir") + System.getProperty("file.separator") + "config.properties";
+  public static final int DEFAULT_FTP_PORT = 21;
 
   public Config load() {
     if (!new File(CONFIG_FILE_PATH).exists()) {
@@ -81,9 +85,11 @@ public class ConfigSerializer {
     c.ftpDirectory = properties.getProperty(FTP_DIRECTORY);
 
     c.ftpServer = properties.getProperty(FTP_SERVER_NAME);
-    c.ftpPort = Integer.parseInt(properties.getProperty(FTP_PORT));
+    c.ftpPort = NumberUtils.toInt(properties.getProperty(FTP_PORT), DEFAULT_FTP_PORT);
     c.ftpLogin = properties.getProperty(FTP_LOGIN);
     c.ftpPassword = properties.getProperty(FTP_PASSWORD);
+
+    c.savePassword = BooleanUtils.toBoolean(properties.getProperty(SAVE_PASSWORD));
 
     c.userName = properties.getProperty(USER_NAME);
     c.userPhone = properties.getProperty(USER_PHONE);
@@ -112,7 +118,11 @@ public class ConfigSerializer {
     properties.setProperty(FTP_SERVER_NAME, config.ftpServer);
     properties.setProperty(FTP_PORT, Integer.toString(config.ftpPort));
     properties.setProperty(FTP_LOGIN, config.ftpLogin);
-    properties.setProperty(FTP_PASSWORD, config.ftpPassword);
+    if (config.savePassword) {
+      properties.setProperty(FTP_PASSWORD, config.ftpPassword);
+    }
+
+    properties.setProperty(SAVE_PASSWORD, Boolean.toString(config.savePassword));
 
     properties.setProperty(USER_NAME, config.userName);
     properties.setProperty(USER_PHONE, config.userPhone);

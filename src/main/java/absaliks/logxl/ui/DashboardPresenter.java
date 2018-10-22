@@ -35,6 +35,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -79,6 +80,8 @@ public class DashboardPresenter {
   private TextField ftpLogin;
   @FXML
   private TextField ftpPassword;
+  @FXML
+  private CheckBox savePassword;
 
   @Inject
   private Config config;
@@ -107,7 +110,13 @@ public class DashboardPresenter {
     initDirectoryControl();
     initUserNameControl();
     initPhoneControl();
+    initSavePasswordCheckbox();
     refreshFTPControlsAvailability();
+  }
+
+  private void initSavePasswordCheckbox() {
+    savePassword.setSelected(config.savePassword);
+    savePassword.setOnAction(e -> config.savePassword = savePassword.isSelected());
   }
 
   private void initReportTypeControl() {
@@ -116,15 +125,13 @@ public class DashboardPresenter {
   }
 
   private void initLogsSourceControl() {
-    // TODO Unlock after Local Dir implementation
     config.logsSource = FTP;
     initEnumChoiceBox(logsSource, LogsSource.class, config.logsSource);
-    logsSource.setDisable(true);
-    /*logsSource.setOnAction((e) -> {
+    logsSource.setOnAction((e) -> {
       config.logsSource = logsSource.getValue();
       refreshFTPControlsAvailability();
       refreshDirectoryControlValue();
-    });*/
+    });
   }
 
   private void refreshFTPControlsAvailability() {

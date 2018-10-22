@@ -24,11 +24,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.Validate;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -39,7 +37,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.DateFormatConverter;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Log
@@ -53,7 +50,6 @@ public class ReportExporter {
   private SXSSFWorkbook workbook;
   private CellStyle dataStyle;
   private CellStyle dateStyle;
-  private Sheet sheet;
 
   public void export(List<Record> records) throws IOException {
     Validate.notEmpty(records, "Результат пустой, нечего выгружать");
@@ -63,9 +59,9 @@ public class ReportExporter {
 
     InputStream stream = ReportExporter.class.getClassLoader().getResourceAsStream("template.xlsx");
     XSSFWorkbook template = new XSSFWorkbook(stream);
-    fillMetaData(template);
+    fillMetaData(template.getSheetAt(0));
     this.workbook = new SXSSFWorkbook(template, 100);
-    sheet = this.workbook.getSheetAt(0);
+    Sheet sheet = this.workbook.getSheetAt(0);
     createDataStyle();
     createDateStyle();
     for (int i = 0; i < records.size(); i++) {
@@ -82,20 +78,16 @@ public class ReportExporter {
     this.workbook.dispose();
   }
 
-  private void fillMetaData(XSSFWorkbook template) {
-    XSSFSheet s = template.getSheetAt(0);
-    // TODO: add null-guards
-    setCellValue(s.getRow(0).getCell(3), config.userName);
-    s.getRow(1).getCell(3).setCellValue(config.userPhone);
+  private void fillMetaData(Sheet sheet) {
+    getCell(sheet, 0, 3).setCellValue(config.userName);
+    getCell(sheet, 1, 3).setCellValue(config.userPhone);
   }
 
-  @SneakyThrows(UnsupportedEncodingException.class)
-  private void setCellValue(Cell cell, String string) {
-    // Convert from Unicode to UTF-8
-    byte[] utf8 = string.getBytes("UTF-8");
-
-    // Convert from UTF-8 to Unicode
-    cell.setCellValue(new String(utf8, "UTF-8"));
+  private Cell getCell(Sheet sheet, int y, int x) {
+    Row row = sheet.getRow(y);
+    row = row != null ? row : sheet.createRow(y);
+    Cell cell = row.getCell(x);
+    return cell != null ? cell : row.createCell(x);
   }
 
   private void createDataStyle() {

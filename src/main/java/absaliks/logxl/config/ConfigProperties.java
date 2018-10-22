@@ -32,6 +32,8 @@ interface ConfigProperties {
   String FTP_LOGIN = "ftpLogin";
   String FTP_PASSWORD = "ftpPassword";
 
+  String SAVE_PASSWORD = "savePassword";
+
   String USER_NAME = "userName";
   String USER_PHONE = "userPhone";
 }

@@ -40,7 +40,8 @@ class LogParserTest {
   @Test
   void parse() throws IOException {
     InputStream stream = new ByteArrayInputStream(GIVEN_CSV.getBytes());
-    List<Record> actualRecords = new LogParser(stream).parse();
+    List<Record> actualRecords = new LogParser(stream, LocalDateTime.MIN, LocalDateTime.MAX)
+        .parse();
     assertEquals(createExpectedRecordList(), actualRecords);
   }
 

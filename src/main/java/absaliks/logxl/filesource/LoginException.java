@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.ftp;
+package absaliks.logxl.filesource;
 
 import lombok.NoArgsConstructor;
 
