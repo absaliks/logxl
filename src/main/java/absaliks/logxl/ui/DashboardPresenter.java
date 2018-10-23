@@ -133,6 +133,10 @@ public class DashboardPresenter {
     refreshFTPControlsAvailability();
   }
 
+  void shutdown() {
+    executor.shutdown();
+  }
+
   private void initSavePasswordCheckbox() {
     savePassword.setSelected(config.savePassword);
     savePassword.setOnAction(e -> config.savePassword = savePassword.isSelected());

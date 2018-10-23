@@ -26,10 +26,16 @@ public class JFXLauncher extends Application {
 
   @Override
   public void start(Stage stage) {
-    DashboardView appView = new DashboardView();
-    Scene scene = new Scene(appView.getView());
+    DashboardView view = new DashboardView();
+    Scene scene = new Scene(view.getView());
     stage.setTitle("LogXL");
     stage.setScene(scene);
+    stage.setOnHidden(e -> {
+      Object presenter = view.getPresenter();
+      if (presenter instanceof DashboardPresenter) {
+        ((DashboardPresenter) presenter).shutdown();
+      }
+    });
     stage.show();
   }
 }
