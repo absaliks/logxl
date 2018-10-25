@@ -90,22 +90,24 @@ public class ReportBuilder {
   private Record createReportRecord() {
     final Record result = new Record();
     result.datetime = truncateTime(buffer.get(0).datetime);
-    result.values = calculateAvgValues();
+    setValues(result);
     return result;
   }
 
-  private float[] calculateAvgValues() {
+  private void setValues(final Record result) {
     final int valuesCount = buffer.get(0).values.length;
-    final float[] results = new float[valuesCount];
-    buffer.forEach(rec -> {
+    result.values = new float[valuesCount];
+    for (Record rec : buffer) {
       for (int i = 0; i < valuesCount; i++) {
-        results[i] += rec.values[i];
+        result.values[i] += rec.values[i];
       }
-    });
-    for (int i = 0; i < valuesCount; i++) {
-      results[i] /= buffer.size();
+      if (rec.isHeatingOn && !result.isHeatingOn) {
+        result.isHeatingOn = true;
+      }
     }
-    return results;
+    for (int i = 0; i < valuesCount; i++) {
+      result.values[i] /= buffer.size();
+    }
   }
 
   public List<Record> flush() {

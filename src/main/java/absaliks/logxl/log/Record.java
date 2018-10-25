@@ -25,7 +25,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Record {
-
   public LocalDateTime datetime;
   public float[] values;
+  public boolean isHeatingOn;
 }
