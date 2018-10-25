@@ -106,7 +106,7 @@ public class LogParser {
     do {
       line = reader.readLine();
       if (line == null) {
-        throw new IllegalStateException("Table header not found");
+        throw new IllegalStateException("Не найден заголовок файла");
       }
     } while (!line.startsWith("Timestamp;"));
   }

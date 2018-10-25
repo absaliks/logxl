@@ -24,8 +24,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.Validate;
@@ -45,10 +47,15 @@ public class ReportExporter {
 
   private static final int ROW_OFFSET = 8;
   private static final File FILE = new File("report.xlsx");
+  private static final Byte[] VALUES_DECIMAL_PLACES = {
+      2, 2, 2, 2, 2, 2, 1, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 1, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2
+  };
+
+  private final Map<Byte, CellStyle> DATA_ROUND_STYLES = new HashMap<>(3);
 
   private final Config config;
   private SXSSFWorkbook workbook;
-  private CellStyle dataStyle;
+  private CellStyle heatingStyle;
   private CellStyle dateStyle;
 
   public void export(List<Record> records) throws IOException {
@@ -62,13 +69,15 @@ public class ReportExporter {
     fillMetaData(template.getSheetAt(0));
     this.workbook = new SXSSFWorkbook(template, 100);
     Sheet sheet = this.workbook.getSheetAt(0);
-    createDataStyle();
+    createDataStyles();
     createDateStyle();
+    heatingStyle = createDataStyle();
     for (int i = 0; i < records.size(); i++) {
       Row row = sheet.createRow(i + ROW_OFFSET);
       Record rec = records.get(i);
       addDateCell(rec, row);
       addMeasurementsCells(rec.values, row);
+      addHeatingCells(rec.isHeatingOn, row);
     }
 
     FileOutputStream out = new FileOutputStream(FILE);
@@ -79,22 +88,45 @@ public class ReportExporter {
   }
 
   private void fillMetaData(Sheet sheet) {
-    getCell(sheet, 0, 3).setCellValue(config.userName);
-    getCell(sheet, 1, 3).setCellValue(config.userPhone);
+    getMetadataCell(sheet, 0).setCellValue(config.userName);
+    getMetadataCell(sheet, 1).setCellValue(config.userPhone);
   }
 
-  private Cell getCell(Sheet sheet, int y, int x) {
+  private Cell getMetadataCell(Sheet sheet, int y) {
     Row row = sheet.getRow(y);
     row = row != null ? row : sheet.createRow(y);
-    Cell cell = row.getCell(x);
-    return cell != null ? cell : row.createCell(x);
+    Cell cell = row.getCell(3);
+    return cell != null ? cell : row.createCell(3);
   }
 
-  private void createDataStyle() {
-    dataStyle = workbook.createCellStyle();
-    dataStyle.setBorderBottom(BorderStyle.THIN);
-    dataStyle.setBorderLeft(BorderStyle.THIN);
-    dataStyle.setBorderRight(BorderStyle.THIN);
+  private void createDataStyles() {
+    for (byte i = 1; i <= 3; i++) {
+      CellStyle dataStyle = createDataStyle();
+      String format;
+      switch (i) {
+        case 1:
+          format = "0.#";
+          break;
+        case 2:
+          format = "0.##";
+          break;
+        case 3:
+          format = "0.###";
+          break;
+        default:
+          throw new IllegalStateException();
+      }
+      dataStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
+      DATA_ROUND_STYLES.put(i, dataStyle);
+    }
+  }
+
+  private CellStyle createDataStyle() {
+    CellStyle style = workbook.createCellStyle();
+    style.setBorderBottom(BorderStyle.THIN);
+    style.setBorderLeft(BorderStyle.THIN);
+    style.setBorderRight(BorderStyle.THIN);
+    return style;
   }
 
   private void createDateStyle() {
@@ -115,19 +147,23 @@ public class ReportExporter {
     }
   }
 
-  private void addMeasurementsCells(float[] values, Row row) {
-    for (int i = 0; i < values.length; i++) {
-      Cell cell = row.createCell(i + 1);
-      cell.setCellValue(values[i]);
-      cell.setCellStyle(dataStyle);
-    }
-  }
-
   private void addDateCell(Record rec, Row row) {
     Cell cell = row.createCell(0);
     cell.setCellValue(java.sql.Timestamp.valueOf(rec.datetime));
     cell.setCellStyle(dateStyle);
   }
 
+  private void addMeasurementsCells(float[] values, Row row) {
+    for (int i = 0; i < values.length; i++) {
+      Cell cell = row.createCell(i + 1);
+      cell.setCellValue(values[i]);
+      cell.setCellStyle(DATA_ROUND_STYLES.get(VALUES_DECIMAL_PLACES[i]));
+    }
+  }
 
+  private void addHeatingCells(boolean isHeatingOn, Row row) {
+    Cell cell = row.createCell(31);
+    cell.setCellValue(isHeatingOn ? "ВКЛ" : "ВЫКЛ");
+    cell.setCellStyle(heatingStyle);
+  }
 }
