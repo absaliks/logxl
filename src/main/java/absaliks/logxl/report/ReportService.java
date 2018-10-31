@@ -78,8 +78,9 @@ public class ReportService {
           List<Record> records = new LogParser(stream, config.dateFrom, config.dateTo).parse();
           builder.consume(records);
         } catch (Exception e) {
-          log.log(Level.SEVERE, "Ошибка при обработке файла " + filename, e);
-          throw e;
+          log.log(Level.SEVERE, "Parse error in file " + filename, e);
+          throw new RuntimeException(
+              "Ошибка при обработке файла " + filename + ":\n" + e.getMessage());
         }
         progress.setValue((1.0 + i) * 100 / filesCount);
       }

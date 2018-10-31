@@ -93,11 +93,11 @@ public class LogParser {
         int fieldIx = VALUE_FIELDS[i];
         r.values[i] = Float.parseFloat(fields[fieldIx].replace(',', '.'));
       }
-      r.isHeatingOn = Float.parseFloat(fields[33]) != 0;
+      r.isHeatingOn = Float.parseFloat(fields[33].replace(',', '.')) != 0;
       return r;
     } catch (Exception e) {
       log.severe("Failed to parse line: " + line);
-      throw new RuntimeException("Ошибка обработки строки: " + line);
+      throw new RuntimeException("Не удалось интерпретировать строку: " + line);
     }
   }
 
