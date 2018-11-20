@@ -37,15 +37,16 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<BorderPane prefHeight="460.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/8.0.191"
+<BorderPane prefHeight="520.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/8.0.191"
   xmlns:fx="http://javafx.com/fxml/1" fx:controller="absaliks.logxl.ui.DashboardPresenter">
   <center>
     <VBox BorderPane.alignment="CENTER">
       <children>
-        <GridPane>
+        <GridPane hgap="7.0" vgap="4.0">
           <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="130.0" prefWidth="130.0"/>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            <ColumnConstraints halignment="LEFT" hgrow="NEVER" percentWidth="40.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="60.0"
+              prefWidth="100.0"/>
           </columnConstraints>
           <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -68,11 +69,10 @@
             <Font size="15.0"/>
           </font>
         </Label>
-        <GridPane>
+        <GridPane hgap="7.0" vgap="4.0">
           <columnConstraints>
-            <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="295.0" minWidth="130.0"
-              prefWidth="130.0"/>
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="479.0" minWidth="210.0" prefWidth="479.0"/>
+            <ColumnConstraints halignment="LEFT" hgrow="NEVER" percentWidth="40.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="60.0"/>
           </columnConstraints>
           <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -80,7 +80,11 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
           </rowConstraints>
           <children>
-            <Label text="Дата от:"/>
+            <Label text="Дата от:" textOverrun="CLIP">
+              <GridPane.margin>
+                <Insets/>
+              </GridPane.margin>
+            </Label>
             <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1">
               <children>
                 <DatePicker fx:id="dateFrom" prefHeight="25.0" prefWidth="110.0"/>
@@ -113,10 +117,10 @@
             <Insets/>
           </VBox.margin>
         </Label>
-        <GridPane>
+        <GridPane hgap="7.0" vgap="4.0">
           <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="130.0" prefWidth="130.0"/>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+            <ColumnConstraints halignment="LEFT" hgrow="NEVER" percentWidth="40.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="60.0"/>
           </columnConstraints>
           <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -160,10 +164,10 @@
     <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="425.0" spacing="10.0"
       BorderPane.alignment="CENTER">
       <children>
-        <ProgressBar fx:id="progressBar" minWidth="50.0" prefWidth="300.0" progress="0.0"
+        <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0"
           HBox.hgrow="ALWAYS"/>
-        <Button mnemonicParsing="false" onAction="#generateReport" prefWidth="150.0"
-          text="Сгенерировать отчет" HBox.hgrow="NEVER"/>
+        <Button mnemonicParsing="false" onAction="#generateReport" text="Сгенерировать отчет"
+          HBox.hgrow="NEVER"/>
       </children>
     </HBox>
   </bottom>
