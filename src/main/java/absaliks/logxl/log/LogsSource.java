@@ -18,14 +18,15 @@
 
 package absaliks.logxl.log;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
 public enum LogsSource {
   FTP("FTP"),
   LOCAL_DIR("Локальная папка");
 
   public final String description;
+
+  LogsSource(String description) {
+    this.description = description;
+  }
 
   @Override
   public String toString() {

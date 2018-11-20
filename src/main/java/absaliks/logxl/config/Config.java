@@ -21,9 +21,7 @@ package absaliks.logxl.config;
 import absaliks.logxl.log.LogsSource;
 import absaliks.logxl.report.ReportType;
 import java.time.LocalDateTime;
-import lombok.ToString;
 
-@ToString(exclude = "ftpPassword")
 public class Config {
   public ReportType reportType;
   public LocalDateTime dateFrom;
@@ -42,4 +40,23 @@ public class Config {
 
   public String userName;
   public String userPhone;
+
+  @Override
+  public String toString() {
+    return "Config{" +
+        "reportType=" + reportType +
+        ", dateFrom=" + dateFrom +
+        ", dateTo=" + dateTo +
+        ", logsSource=" + logsSource +
+        ", localDirectory='" + localDirectory + '\'' +
+        ", ftpDirectory='" + ftpDirectory + '\'' +
+        ", ftpServer='" + ftpServer + '\'' +
+        ", ftpPort=" + ftpPort +
+        ", ftpLogin='" + ftpLogin + '\'' +
+        ", ftpPassword='" + ftpPassword + '\'' +
+        ", savePassword=" + savePassword +
+        ", userName='" + userName + '\'' +
+        ", userPhone='" + userPhone + '\'' +
+        '}';
+  }
 }

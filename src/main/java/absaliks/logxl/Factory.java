@@ -24,10 +24,7 @@ import absaliks.logxl.filesource.FtpFileSource;
 import absaliks.logxl.filesource.LocalFileSource;
 import absaliks.logxl.filesource.LogFileSource;
 import absaliks.logxl.report.ReportService;
-import lombok.AccessLevel;
-import lombok.Getter;
 
-@Getter(AccessLevel.PUBLIC)
 class Factory implements AbstractFactory {
   private final ConfigSerializer configSerializer;
   private final Config config;
@@ -35,6 +32,16 @@ class Factory implements AbstractFactory {
   Factory() {
     configSerializer = new ConfigSerializer();
     config = configSerializer.load();
+  }
+
+  @Override
+  public ConfigSerializer getConfigSerializer() {
+    return configSerializer;
+  }
+
+  @Override
+  public Config getConfig() {
+    return config;
   }
 
   @Override

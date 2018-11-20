@@ -20,32 +20,31 @@ package absaliks.logxl.report;
 
 import absaliks.logxl.AbstractFactory;
 import absaliks.logxl.config.Config;
+import absaliks.logxl.filesource.LogFileSource;
 import absaliks.logxl.log.LogParser;
 import absaliks.logxl.log.Record;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.extern.java.Log;
-import lombok.val;
 import org.apache.commons.lang3.Validate;
 
-@Log
 public class ReportService {
+
+  private static final Logger log = Logger.getLogger(ReportService.class.getName());
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter
       .ofPattern("yyyy.MM.dd_HH_mm")
       .withZone(ZoneId.systemDefault());
 
-  @Getter
   private final DoubleProperty progress = new SimpleDoubleProperty();
   private final AbstractFactory factory;
   private final Config config;
@@ -55,10 +54,13 @@ public class ReportService {
     this.factory = factory;
   }
 
-  @SneakyThrows
-  public void createReport() {
+  public DoubleProperty progress() {
+    return progress;
+  }
+
+  public void createReport() throws IOException {
     resetProgress();
-    val fileSource = factory.createLogFileSource();
+    final LogFileSource fileSource = factory.createLogFileSource();
     validateConfiguration();
     ReportExporter.deleteReportFile();
     try {
@@ -67,9 +69,9 @@ public class ReportService {
       List<String> fileList = filterFileList(fileSource.getFileList());
       Validate.isTrue(!fileList.isEmpty(),
           "Не найдено ни одного файла удовлетворяющего выбранным датам");
-      val filesCount = fileList.size();
+      final int filesCount = fileList.size();
 
-      val builder = new ReportBuilder(config.reportType);
+      final ReportBuilder builder = new ReportBuilder(config.reportType);
       for (int i = 0; i < fileList.size(); i++) {
         String filename = fileList.get(i);
         log.info("Обработка файла " + filename);

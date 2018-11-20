@@ -22,12 +22,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-@Log
 public class TimeFormatter {
+
+  private static final Logger log = Logger.getLogger(TimeFormatter.class.getName());
 
   private static final DateTimeFormatter LONG_TIME_FORMATTER = DateTimeFormatter
       .ofPattern("HH:mm:ss");
@@ -44,7 +45,7 @@ public class TimeFormatter {
     return LONG_TIME_FORMATTER.format(time);
   }
 
-  public LocalDateTime buildDate(LocalDate date, String time) {
+  LocalDateTime buildDate(LocalDate date, String time) {
     String[] timeparts = StringUtils.split(time.replaceAll("[^0-9:.]", ""), ":.");
     int nano = 0;
     byte second = 0, minute = 0, hour = 0;

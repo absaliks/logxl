@@ -30,11 +30,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
-@Log
 public class LogParser {
+
+  private static final Logger log = Logger.getLogger(LogParser.class.getName());
+
   private static final int AVG_DATE_LINE_SIZE = 140;
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter
       .ofPattern("yyyy.MM.dd_HH:mm:ss")

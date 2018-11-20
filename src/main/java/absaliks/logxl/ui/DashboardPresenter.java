@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -49,15 +50,12 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javax.inject.Inject;
-import lombok.extern.java.Log;
-import lombok.val;
 
-@Log
 public class DashboardPresenter {
 
-  private ExecutorService executor = Executors.newSingleThreadExecutor();
+  private static final Logger log = Logger.getLogger(DashboardPresenter.class.getName());
   private static final TimeFormatter TIME_FORMATTER = new TimeFormatter();
-  private static final LocalDateTime NOW = LocalDateTime.now();
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
 
   @FXML
   private TextField userName;
@@ -108,8 +106,8 @@ public class DashboardPresenter {
         reportService.createReport();
       } catch (Exception e) {
         log.log(Level.SEVERE, "Unable to create a report with settings " + config, e);
-        Platform
-            .runLater(() -> showAlert(AlertType.ERROR, "Не удалось создать отчет", e.getMessage()));
+        Platform.runLater(() ->
+            showAlert(AlertType.ERROR, "Не удалось создать отчет", e.getMessage()));
       } finally {
         future = null;
       }
@@ -129,7 +127,7 @@ public class DashboardPresenter {
     initUserNameControl();
     initPhoneControl();
     initSavePasswordCheckbox();
-    progressBar.progressProperty().bind(reportService.getProgress());
+    progressBar.progressProperty().bind(reportService.progress());
     refreshFTPControlsAvailability();
   }
 
@@ -206,11 +204,13 @@ public class DashboardPresenter {
 
   private void initFtpPortControl() {
     int initialValue = config.ftpPort == 0 ? config.ftpPort : 21;
-    val factory = new IntegerSpinnerValueFactory(1, 65535, initialValue);
+    final IntegerSpinnerValueFactory factory
+        = new IntegerSpinnerValueFactory(1, 65535, initialValue);
     ftpPort.setValueFactory(factory);
     ftpPort.valueProperty().addListener((e, o, newValue) -> config.ftpPort = newValue);
 
-    val formatter = new TextFormatter<Integer>(factory.getConverter(), factory.getValue());
+    final TextFormatter<Integer> formatter =
+        new TextFormatter<>(factory.getConverter(), factory.getValue());
     ftpPort.getEditor().setTextFormatter(formatter);
     factory.valueProperty().bindBidirectional(formatter.valueProperty());
   }

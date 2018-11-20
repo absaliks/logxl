@@ -19,13 +19,14 @@
 package absaliks.logxl.filesource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface LogFileSource {
 
   void initialize();
 
-  List<String> getFileList();
+  List<String> getFileList() throws IOException;
 
   File getFile(String filename);
 

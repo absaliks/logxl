@@ -18,19 +18,7 @@
 
 package absaliks.logxl.config;
 
-import static absaliks.logxl.config.ConfigProperties.DATE_FROM;
-import static absaliks.logxl.config.ConfigProperties.DATE_TO;
-import static absaliks.logxl.config.ConfigProperties.FTP_DIRECTORY;
-import static absaliks.logxl.config.ConfigProperties.FTP_LOGIN;
-import static absaliks.logxl.config.ConfigProperties.FTP_PASSWORD;
-import static absaliks.logxl.config.ConfigProperties.FTP_PORT;
-import static absaliks.logxl.config.ConfigProperties.FTP_SERVER_NAME;
-import static absaliks.logxl.config.ConfigProperties.LOCAL_DIRECTORY;
-import static absaliks.logxl.config.ConfigProperties.LOGS_SOURCE;
-import static absaliks.logxl.config.ConfigProperties.REPORT_TYPE;
-import static absaliks.logxl.config.ConfigProperties.SAVE_PASSWORD;
-import static absaliks.logxl.config.ConfigProperties.USER_NAME;
-import static absaliks.logxl.config.ConfigProperties.USER_PHONE;
+import static absaliks.logxl.config.ConfigProperties.*;
 
 import absaliks.logxl.log.LogsSource;
 import absaliks.logxl.report.ReportType;
@@ -44,13 +32,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Properties;
 import java.util.logging.Level;
-import lombok.extern.java.Log;
-import lombok.val;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-@Log
 public class ConfigSerializer {
+
+  private static final Logger log = Logger.getLogger(ConfigSerializer.class.getName());
 
   private static final String PROPERTY_FILE_COMMENTS =
       "reportType:   {MINUTELY, HOURLY, DAILY}\n" +
@@ -108,7 +96,7 @@ public class ConfigSerializer {
     return c;
   }
 
-  public <E extends Enum<E>> E getEnum(final Class<E> enumClass, final String enumName,
+  private <E extends Enum<E>> E getEnum(final Class<E> enumClass, final String enumName,
       E defaultValue) {
     try {
       return Enum.valueOf(enumClass, enumName);
@@ -127,15 +115,14 @@ public class ConfigSerializer {
 
   public void save(Config config) {
     try (OutputStream stream = new FileOutputStream(CONFIG_FILE_PATH)) {
-      val properties = mapConfigToProperties(config);
-      properties.store(stream, PROPERTY_FILE_COMMENTS);
+      mapConfigToProperties(config).store(stream, PROPERTY_FILE_COMMENTS);
     } catch (Exception e) {
       log.log(Level.WARNING, "Не удалось сохранить файл " + CONFIG_FILE_PATH, e);
     }
   }
 
   private Properties mapConfigToProperties(Config config) {
-    Properties properties = new NullIgnoringProperties();
+    Properties properties = new NullSafeProperties();
     properties.setProperty(REPORT_TYPE, config.reportType.name());
     properties.setProperty(DATE_FROM, config.dateFrom.toString());
     properties.setProperty(DATE_TO, config.dateTo.toString());

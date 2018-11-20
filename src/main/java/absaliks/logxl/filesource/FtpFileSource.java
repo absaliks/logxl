@@ -25,14 +25,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import lombok.SneakyThrows;
-import lombok.extern.java.Log;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
-@Log
 public class FtpFileSource implements LogFileSource {
+
+  private static final Logger log = Logger.getLogger(FtpFileSource.class.getName());
 
   private final Config config;
   private FTPClient ftpClient = new FTPClient();
@@ -53,8 +53,7 @@ public class FtpFileSource implements LogFileSource {
   }
 
   @Override
-  @SneakyThrows(IOException.class)
-  public List<String> getFileList() {
+  public List<String> getFileList() throws IOException {
     return Arrays.stream(ftpClient.listFiles(config.ftpDirectory))
         .filter(FTPFile::isFile)
         .map(FTPFile::getName)

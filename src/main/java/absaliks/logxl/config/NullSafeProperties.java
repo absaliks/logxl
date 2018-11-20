@@ -20,12 +20,12 @@ package absaliks.logxl.config;
 
 import java.util.Properties;
 
-public class NullIgnoringProperties extends Properties {
+public class NullSafeProperties extends Properties {
 
   @Override
-  public synchronized Object setProperty(String key, String value) {
+  public Object setProperty(String key, String value) {
     if (value == null) {
-      return null; // just do nothing
+      return remove(key);
     }
     return super.setProperty(key, value);
   }

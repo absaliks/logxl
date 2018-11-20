@@ -28,8 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.Validate;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,9 +40,9 @@ import org.apache.poi.ss.util.DateFormatConverter;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-@Log
-@RequiredArgsConstructor
-public class ReportExporter {
+class ReportExporter {
+
+  private static final Logger log = Logger.getLogger(ReportExporter.class.getName());
 
   private static final int ROW_OFFSET = 8;
   private static final File FILE = new File("report.xlsx");
@@ -58,7 +57,11 @@ public class ReportExporter {
   private CellStyle heatingStyle;
   private CellStyle dateStyle;
 
-  public void export(List<Record> records) throws IOException {
+  ReportExporter(Config config) {
+    this.config = config;
+  }
+
+  void export(List<Record> records) throws IOException {
     Validate.notEmpty(records, "Результат пустой, нечего выгружать");
     deleteReportFile();
 

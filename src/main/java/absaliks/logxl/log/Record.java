@@ -19,13 +19,32 @@
 package absaliks.logxl.log;
 
 import java.time.LocalDateTime;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.Arrays;
+import java.util.Objects;
 
-@ToString
-@EqualsAndHashCode
 public class Record {
   public LocalDateTime datetime;
   public float[] values;
   public boolean isHeatingOn;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Record record = (Record) o;
+    return isHeatingOn == record.isHeatingOn &&
+        Objects.equals(datetime, record.datetime) &&
+        Arrays.equals(values, record.values);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(datetime, isHeatingOn);
+    result = 31 * result + Arrays.hashCode(values);
+    return result;
+  }
 }

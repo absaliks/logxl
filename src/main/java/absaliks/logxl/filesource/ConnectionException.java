@@ -18,9 +18,9 @@
 
 package absaliks.logxl.filesource;
 
-public class ConnectionException extends RuntimeException {
+class ConnectionException extends RuntimeException {
 
-  public ConnectionException(String message, Throwable cause) {
+  ConnectionException(String message, Throwable cause) {
     super(message, cause);
   }
 }

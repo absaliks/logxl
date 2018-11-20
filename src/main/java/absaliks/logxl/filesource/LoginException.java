@@ -18,16 +18,13 @@
 
 package absaliks.logxl.filesource;
 
-import lombok.NoArgsConstructor;
+class LoginException extends RuntimeException {
 
-@NoArgsConstructor
-public class LoginException extends RuntimeException {
-
-  public LoginException(String message) {
+  LoginException(String message) {
     super(message);
   }
 
-  public LoginException(String message, Throwable cause) {
+  LoginException(String message, Throwable cause) {
     super(message, cause);
   }
 }

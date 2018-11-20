@@ -21,9 +21,7 @@ package absaliks.logxl.report;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public enum ReportType {
   MINUTELY("Поминутный", ChronoUnit.MINUTES, ChronoField.MINUTE_OF_HOUR),
   HOURLY("Часовой", ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY),
@@ -32,6 +30,13 @@ public enum ReportType {
   public final String description;
   public final TemporalUnit relatedTemporalUnit;
   public final ChronoField relatedChronoField;
+
+  ReportType(String description, TemporalUnit relatedTemporalUnit,
+      ChronoField relatedChronoField) {
+    this.description = description;
+    this.relatedTemporalUnit = relatedTemporalUnit;
+    this.relatedChronoField = relatedChronoField;
+  }
 
   @Override
   public String toString() {
