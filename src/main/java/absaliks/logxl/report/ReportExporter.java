@@ -47,7 +47,7 @@ class ReportExporter {
   private static final int ROW_OFFSET = 8;
   private static final File FILE = new File("report.xlsx");
   private static final Byte[] VALUES_DECIMAL_PLACES = {
-      2, 2, 2, 2, 2, 2, 1, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 1, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2
+      2, 2, 2, 2, 2, 2, 1, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 1, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2
   };
 
   private final Map<Byte, CellStyle> DATA_ROUND_STYLES = new HashMap<>(3);
@@ -165,7 +165,7 @@ class ReportExporter {
   }
 
   private void addHeatingCells(boolean isHeatingOn, Row row) {
-    Cell cell = row.createCell(31);
+    Cell cell = row.createCell(32);
     cell.setCellValue(isHeatingOn ? "ВКЛ" : "ВЫКЛ");
     cell.setCellStyle(heatingStyle);
   }
