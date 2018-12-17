@@ -104,6 +104,7 @@ public class DashboardPresenter {
     future = executor.submit(() -> {
       try {
         reportService.createReport();
+        Platform.runLater(() -> showAlert(AlertType.INFORMATION, "Выгрузка завершена", "Выгрузка завершена"));
       } catch (Exception e) {
         log.log(Level.SEVERE, "Unable to create a report with settings " + config, e);
         Platform.runLater(() ->
@@ -185,6 +186,12 @@ public class DashboardPresenter {
         e -> config.dateFrom = TIME_FORMATTER.buildDate(dateFrom.getValue(), timeFrom.getValue());
     this.dateFrom.setOnAction(dateFromUpdater);
     this.timeFrom.setOnAction(dateFromUpdater);
+    this.dateFrom.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+      try {
+        this.dateFrom.setValue(this.dateFrom.getConverter().fromString(newValue));
+      } catch (Exception e) {
+      }
+    });
 
     timeTo.getItems().addAll(timeElements);
     timeTo.setValue(timeElements.get(timeElements.size() - 1));
@@ -194,6 +201,12 @@ public class DashboardPresenter {
         e -> config.dateTo = TIME_FORMATTER.buildDate(dateTo.getValue(), timeTo.getValue());
     this.dateTo.setOnAction(dateToUpdater);
     this.timeTo.setOnAction(dateToUpdater);
+    this.dateTo.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+      try {
+        this.dateTo.setValue(this.dateTo.getConverter().fromString(newValue));
+      } catch (Exception e) {
+      }
+    });
   }
 
   private void setDateValue(DatePicker datePicker,
