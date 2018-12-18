@@ -84,12 +84,11 @@ public class ReportService {
           throw new RuntimeException(
               "Ошибка при обработке файла " + filename + ":\n" + e.getMessage());
         }
-        progress.setValue((1.0 + i) * 100 / filesCount);
+        progress.setValue((0.0 + i) / filesCount);
       }
 
-      List<Record> results = builder.flush();
-      results.forEach(System.out::println);
-      new ReportExporter(config).export(results);
+      new ReportExporter(config).export(builder.flush());
+      progress.setValue(1);
     } catch (Exception e) {
       fileSource.destroy();
       throw e;
