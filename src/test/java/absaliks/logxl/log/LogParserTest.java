@@ -21,11 +21,13 @@ package absaliks.logxl.log;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import absaliks.logxl.config.Config;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 class LogParserTest {
@@ -40,9 +42,15 @@ class LogParserTest {
   @Test
   void parse() throws IOException {
     InputStream stream = new ByteArrayInputStream(GIVEN_CSV.getBytes());
-    List<Record> actualRecords = new LogParser(stream, LocalDateTime.MIN, LocalDateTime.MAX)
-        .parse();
+    List<Record> actualRecords = new LogParser(stream, givenConfig()).parse();
     assertEquals(createExpectedRecordList(), actualRecords);
+  }
+
+  private Config givenConfig() {
+    val config = new Config();
+    config.dateFrom = LocalDateTime.MIN;
+    config.dateTo = LocalDateTime.MAX;
+    return config;
   }
 
   private List<Record> createExpectedRecordList() {

@@ -36,4 +36,6 @@ interface ConfigProperties {
 
   String USER_NAME = "userName";
   String USER_PHONE = "userPhone";
+
+  String SILENT = "silent";
 }

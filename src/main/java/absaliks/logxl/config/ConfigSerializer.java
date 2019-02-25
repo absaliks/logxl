@@ -80,19 +80,17 @@ public class ConfigSerializer {
     c.dateFrom = parseDateTime(properties.getProperty(DATE_FROM), c.dateFrom);
     c.dateTo = parseDateTime(properties.getProperty(DATE_TO), c.dateTo);
     c.logsSource = getEnum(LogsSource.class, properties.getProperty(LOGS_SOURCE), c.logsSource);
-
     c.localDirectory = properties.getProperty(LOCAL_DIRECTORY);
     c.ftpDirectory = properties.getProperty(FTP_DIRECTORY);
-
     c.ftpServer = properties.getProperty(FTP_SERVER_NAME);
     c.ftpPort = NumberUtils.toInt(properties.getProperty(FTP_PORT), DEFAULT_FTP_PORT);
     c.ftpLogin = properties.getProperty(FTP_LOGIN);
     c.ftpPassword = properties.getProperty(FTP_PASSWORD);
-
     c.savePassword = BooleanUtils.toBoolean(properties.getProperty(SAVE_PASSWORD));
-
     c.userName = properties.getProperty(USER_NAME);
     c.userPhone = properties.getProperty(USER_PHONE);
+
+    c.isSilent = BooleanUtils.toBoolean(properties.getProperty(SILENT, "true"));
     return c;
   }
 

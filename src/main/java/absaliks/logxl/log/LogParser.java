@@ -20,6 +20,7 @@ package absaliks.logxl.log;
 
 import static java.util.Objects.nonNull;
 
+import absaliks.logxl.config.Config;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+@RequiredArgsConstructor
 public class LogParser {
 
   private static final Logger log = Logger.getLogger(LogParser.class.getName());
@@ -41,22 +44,15 @@ public class LogParser {
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter
       .ofPattern("yyyy.MM.dd_HH:mm:ss")
       .withZone(ZoneId.systemDefault());
-  private static final byte[] VALUE_FIELDS = new byte[]{
+  private static final byte[] VALUE_FIELDS = new byte[] {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19,     // -20
       21, 22, 23, 24, 25, 28, 26, 27, 29, 30, 31, 32
   };
 
   private final InputStream stream;
-  private final LocalDateTime from;
-  private final LocalDateTime to;
+  private final Config config;
   private int approxLinesCount;
-
-  public LogParser(InputStream stream, LocalDateTime from, LocalDateTime to) {
-    this.stream = stream;
-    this.from = from;
-    this.to = to;
-  }
 
   public List<Record> parse() throws IOException {
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
@@ -82,7 +78,7 @@ public class LogParser {
     try {
       String[] fields = StringUtils.split(line, ';');
       LocalDateTime datetime = FORMATTER.parse(fields[0], LocalDateTime::from);
-      if (datetime.isBefore(from) || datetime.isAfter(to)) {
+      if (datetime.isBefore(config.dateFrom) || datetime.isAfter(config.dateTo)) {
         log.log(Level.FINE, "Skipping line that outside of time period: {}", line);
         return null;
       }
@@ -98,7 +94,10 @@ public class LogParser {
       return r;
     } catch (Exception e) {
       log.severe("Failed to parse line: " + line);
-      throw new RuntimeException("Не удалось интерпретировать строку: " + line);
+      if (!config.isSilent) {
+        throw new RuntimeException("Не удалось интерпретировать строку: " + line);
+      }
+      return null;
     }
   }
 

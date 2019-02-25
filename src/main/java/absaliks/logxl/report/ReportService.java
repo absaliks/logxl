@@ -77,7 +77,7 @@ public class ReportService {
         log.info("Обработка файла " + filename);
         File logFile = fileSource.getFile(filename);
         try (InputStream stream = new FileInputStream(logFile)) {
-          List<Record> records = new LogParser(stream, config.dateFrom, config.dateTo).parse();
+          List<Record> records = new LogParser(stream, config).parse();
           builder.consume(records);
         } catch (Exception e) {
           log.log(Level.SEVERE, "Parse error in file " + filename, e);
