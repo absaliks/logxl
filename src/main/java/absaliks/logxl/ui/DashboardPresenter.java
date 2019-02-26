@@ -216,7 +216,7 @@ public class DashboardPresenter {
   }
 
   private void initFtpPortControl() {
-    int initialValue = config.ftpPort == 0 ? config.ftpPort : 21;
+    int initialValue = config.ftpPort != 0 ? config.ftpPort : 21;
     final IntegerSpinnerValueFactory factory
         = new IntegerSpinnerValueFactory(1, 65535, initialValue);
     ftpPort.setValueFactory(factory);
