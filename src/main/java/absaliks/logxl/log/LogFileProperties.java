@@ -18,33 +18,9 @@
 
 package absaliks.logxl.log;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Objects;
-
-public class Record {
-  public LocalDateTime datetime;
-  public float[] values;
-  public boolean isHeatingOn;
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Record record = (Record) o;
-    return isHeatingOn == record.isHeatingOn &&
-        Objects.equals(datetime, record.datetime) &&
-        Arrays.equals(values, record.values);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = Objects.hash(datetime, isHeatingOn);
-    result = 31 * result + Arrays.hashCode(values);
-    return result;
-  }
+public interface LogFileProperties {
+  String TIMESTAMP_PATTERN = "yyyy.MM.dd_HH:mm:ss";
+  char VALUE_SEPARATOR = ';';
+  char DECIMAL_SEPARATOR = ',';
+  int VALUES_COUNT = 32;
 }
