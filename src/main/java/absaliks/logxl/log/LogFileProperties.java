@@ -20,7 +20,7 @@ package absaliks.logxl.log;
 
 public interface LogFileProperties {
   String TIMESTAMP_PATTERN = "yyyy.MM.dd_HH:mm:ss";
-  char VALUE_SEPARATOR = ';';
+  char COLUMNS_SEPARATOR = ';';
   char DECIMAL_SEPARATOR = ',';
-  int VALUES_COUNT = 32;
+  int COLUMNS_COUNT = 34;
 }

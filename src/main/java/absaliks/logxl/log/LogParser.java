@@ -18,9 +18,9 @@
 
 package absaliks.logxl.log;
 
+import static absaliks.logxl.log.LogFileProperties.COLUMNS_SEPARATOR;
 import static absaliks.logxl.log.LogFileProperties.DECIMAL_SEPARATOR;
 import static absaliks.logxl.log.LogFileProperties.TIMESTAMP_PATTERN;
-import static absaliks.logxl.log.LogFileProperties.VALUE_SEPARATOR;
 import static java.util.Objects.nonNull;
 
 import absaliks.logxl.config.Config;
@@ -44,16 +44,16 @@ public class LogParser {
 
   private static final Logger log = Logger.getLogger(LogParser.class.getName());
 
-  private static final int AVG_DATE_LINE_SIZE = 140;
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter
+  static final DateTimeFormatter FORMATTER = DateTimeFormatter
       .ofPattern(TIMESTAMP_PATTERN)
       .withZone(ZoneId.systemDefault());
+
+  private static final int AVG_DATE_LINE_SIZE = 140;
   private static final byte[] VALUE_FIELDS = new byte[] {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       11, 12, 13, 14, 15, 16, 17, 18, 19,     // -20
       21, 22, 23, 24, 25, 28, 26, 27, 29, 30, 31, 32
   };
-
   private static final int MIN_DATA_LINE_LENGTH = TIMESTAMP_PATTERN.length()
       + VALUE_FIELDS.length * 2;
 
@@ -99,7 +99,7 @@ public class LogParser {
 
   private Record parseDataLine(String line) {
     try {
-      String[] fields = StringUtils.splitPreserveAllTokens(line, VALUE_SEPARATOR);
+      String[] fields = StringUtils.splitPreserveAllTokens(line, COLUMNS_SEPARATOR);
       LocalDateTime datetime = parseDateTime(fields[0]);
       if (datetime.isBefore(config.dateFrom) || datetime.isAfter(config.dateTo)) {
         log.log(Level.FINE, "Skipping line that outside of time period: {}", line);

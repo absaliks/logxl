@@ -18,7 +18,11 @@
 
 package absaliks.logxl.log;
 
+import static absaliks.logxl.log.LogFileProperties.COLUMNS_COUNT;
+import static absaliks.logxl.log.LogFileProperties.COLUMNS_SEPARATOR;
+import static absaliks.logxl.log.LogParser.FORMATTER;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import absaliks.logxl.config.Config;
@@ -26,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -41,9 +46,21 @@ class LogParserTest {
 
   @Test
   void parse() throws IOException {
-    InputStream stream = new ByteArrayInputStream(GIVEN_CSV.getBytes());
-    List<Record> actualRecords = new LogParser(stream, givenConfig()).parse();
-    assertEquals(createExpectedRecordList(), actualRecords);
+    // FIXME
+    assertEquals(createExpectedRecordList(), parse(GIVEN_CSV));
+  }
+
+  private List<Record> createExpectedRecordList() {
+    Record rec1 = new Record();
+    rec1.datetime = LocalDateTime.of(2018, 2, 14, 12, 5, 15);
+    rec1.values = new float[]{3.5f, -2.96f, 24, -25, -24.98f, -24, -25.4f, -25, 44,
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, 10, -11, 12, 15.55f};
+
+    Record rec2 = new Record();
+    rec2.datetime = LocalDateTime.of(2018, 6, 2, 15, 2, 7);
+    rec2.values = new float[]{-16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3,
+        -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    return asList(rec1, rec2);
   }
 
   private Config givenConfig() {
@@ -53,16 +70,26 @@ class LogParserTest {
     return config;
   }
 
-  private List<Record> createExpectedRecordList() {
-    Record rec1 = new Record();
-    rec1.datetime = LocalDateTime.of(2018, 2, 14, 9, 5, 15);
-    rec1.values = new float[]{3.5f, -2.96f, 24, -25, -24.98f, -24, -25.4f, -25, 44,
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, 10, -11, 12, 15.55f};
+  @Test
+  void testColumnOrder() throws IOException {
+    val expectedTimestamp = LocalDateTime.now();
+    final StringBuilder csvBuilder = new StringBuilder();
+    csvBuilder.append(FORMATTER.format(expectedTimestamp));
+    for (int i = 1; i < COLUMNS_COUNT; i++) {
+      csvBuilder.append(COLUMNS_SEPARATOR).append(i);
+    }
 
-    Record rec2 = new Record();
-    rec2.datetime = LocalDateTime.of(2018, 6, 2, 12, 2, 7);
-    rec2.values = new float[]{-16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3,
-        -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-    return asList(rec1, rec2);
+    Record expectedRecord = new Record();
+    expectedRecord.datetime = expectedTimestamp.truncatedTo(ChronoUnit.SECONDS);
+    expectedRecord.values = new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        18, 19, 21, 22, 23, 24, 25, 28, 26, 27, 29, 30, 31, 32};
+    expectedRecord.isHeatingOn = true;
+
+    assertEquals(singletonList(expectedRecord), parse(csvBuilder.toString()));
+  }
+
+  private List<Record> parse(String givenCsv) throws IOException {
+    InputStream stream = new ByteArrayInputStream(givenCsv.getBytes());
+    return new LogParser(stream, givenConfig()).parse();
   }
 }
