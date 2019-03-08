@@ -1,6 +1,6 @@
 /*
  * LogXL is a program that reads log files from FTP and exports in Excel
- * Copyright (C) 2018  Shamil Absalikov
+ * Copyright (C) 2019  Shamil Absalikov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package absaliks.logxl.report;
+package absaliks.logxl.report.builder;
 
 import absaliks.logxl.log.Record;
+import absaliks.logxl.report.ReportType;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReportBuilder {
+public class AvgReportBuilder extends ReportBuilder {
 
   private final ReportType reportType;
   // TODO: set initial size
-  private final List<Record> avgResults = new ArrayList<>();
   private List<Record> buffer;
 
   private LocalDateTime nextCutOffDateTime;
 
-  public ReportBuilder(ReportType reportType) {
+  public AvgReportBuilder(ReportType reportType) {
     this.reportType = reportType;
     initBuffer();
   }
@@ -55,15 +55,15 @@ public class ReportBuilder {
     }
   }
 
-  public void consume(List<Record> records) {
-    if (!records.isEmpty()) {
+  public void consume(List<Record> rawRecords) {
+    if (!rawRecords.isEmpty()) {
       if (nextCutOffDateTime == null) {
-        nextCutOffDateTime = calcNextCutOffTimeOf(records.get(0).datetime);
+        nextCutOffDateTime = calcNextCutOffTimeOf(rawRecords.get(0).datetime);
       }
-      records.forEach(rec -> {
+      rawRecords.forEach(rec -> {
         if (!rec.datetime.isBefore(nextCutOffDateTime)) {
           nextCutOffDateTime = calcNextCutOffTimeOf(rec.datetime); // TODO: is there better way?
-          avgResults.add(createReportRecord());
+          records.add(createReportRecord());
           initBuffer();
         }
         buffer.add(rec);
@@ -110,10 +110,9 @@ public class ReportBuilder {
     }
   }
 
-  public List<Record> flush() {
+  public void flush() {
     if (!buffer.isEmpty()) {
-      avgResults.add(createReportRecord());
+      records.add(createReportRecord());
     }
-    return avgResults;
   }
 }

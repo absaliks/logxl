@@ -18,7 +18,20 @@
 
 package absaliks.logxl.config;
 
-import static absaliks.logxl.config.ConfigProperties.*;
+import static absaliks.logxl.config.ConfigProperties.DATE_FROM;
+import static absaliks.logxl.config.ConfigProperties.DATE_TO;
+import static absaliks.logxl.config.ConfigProperties.FTP_DIRECTORY;
+import static absaliks.logxl.config.ConfigProperties.FTP_LOGIN;
+import static absaliks.logxl.config.ConfigProperties.FTP_PASSWORD;
+import static absaliks.logxl.config.ConfigProperties.FTP_PORT;
+import static absaliks.logxl.config.ConfigProperties.FTP_SERVER_NAME;
+import static absaliks.logxl.config.ConfigProperties.LOCAL_DIRECTORY;
+import static absaliks.logxl.config.ConfigProperties.LOGS_SOURCE;
+import static absaliks.logxl.config.ConfigProperties.REPORT_TYPE;
+import static absaliks.logxl.config.ConfigProperties.SAVE_PASSWORD;
+import static absaliks.logxl.config.ConfigProperties.SILENT;
+import static absaliks.logxl.config.ConfigProperties.USER_NAME;
+import static absaliks.logxl.config.ConfigProperties.USER_PHONE;
 
 import absaliks.logxl.log.LogsSource;
 import absaliks.logxl.report.ReportType;
@@ -42,7 +55,7 @@ public class ConfigSerializer {
 
   private static final String PROPERTY_FILE_COMMENTS =
       "reportType:   {MINUTELY, HOURLY, DAILY}\n" +
-          "date format:  1970-12-31T23:59:59";
+      "date format:  1970-12-31T23:59:59";
 
   private static final String CONFIG_FILE_PATH =
       System.getProperty("user.dir") + System.getProperty("file.separator") + "config.properties";

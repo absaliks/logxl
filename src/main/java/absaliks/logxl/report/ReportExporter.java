@@ -134,12 +134,19 @@ class ReportExporter {
 
   private void createDateStyle() {
     dateStyle = workbook.createCellStyle();
-    String format = config.reportType == ReportType.DAILY ? "dd.MM.yyyy" : "dd.MM.yyyy HH:mm";
-    String excelFormatPattern = DateFormatConverter.convert(Locale.US, format);
+    String excelFormatPattern = DateFormatConverter.convert(Locale.US, getDateFormat());
     DataFormat poiFormat = workbook.createDataFormat();
     dateStyle.setDataFormat(poiFormat.getFormat(excelFormatPattern));
     dateStyle.setBorderBottom(BorderStyle.THIN);
     dateStyle.setBorderLeft(BorderStyle.THIN);
+  }
+
+  private String getDateFormat() {
+    switch (config.reportType) {
+      case DAILY: return "dd.MM.yyyy";
+      case STRAIGHT: return "dd.MM.yyyy HH:mm:ss";
+      default: return "dd.MM.yyyy HH:mm";
+    }
   }
 
   static void deleteReportFile() throws IOException {

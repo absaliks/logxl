@@ -147,7 +147,6 @@ public class DashboardPresenter {
   }
 
   private void initLogsSourceControl() {
-    config.logsSource = FTP;
     initEnumChoiceBox(logsSource, LogsSource.class, config.logsSource);
     logsSource.setOnAction((e) -> {
       config.logsSource = logsSource.getValue();

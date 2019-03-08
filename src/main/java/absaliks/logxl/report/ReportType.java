@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 
 public enum ReportType {
+  STRAIGHT("Посекундный", null, null),
   MINUTELY("Поминутный", ChronoUnit.MINUTES, ChronoField.MINUTE_OF_HOUR),
   HOURLY("Часовой", ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY),
   DAILY("Суточный", ChronoUnit.DAYS, ChronoField.DAY_OF_MONTH);

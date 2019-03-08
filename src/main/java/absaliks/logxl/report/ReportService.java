@@ -23,6 +23,7 @@ import absaliks.logxl.config.Config;
 import absaliks.logxl.filesource.LogFileSource;
 import absaliks.logxl.log.LogParser;
 import absaliks.logxl.log.Record;
+import absaliks.logxl.report.builder.ReportBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class ReportService {
           "Не найдено ни одного файла удовлетворяющего выбранным датам");
       final int filesCount = fileList.size();
 
-      final ReportBuilder builder = new ReportBuilder(config.reportType);
+      final ReportBuilder builder = ReportBuilder.create(config.reportType);
       for (int i = 0; i < fileList.size(); i++) {
         String filename = fileList.get(i);
         log.info("Обработка файла " + filename);
@@ -87,7 +88,8 @@ public class ReportService {
         progress.setValue((0.0 + i) / filesCount);
       }
 
-      new ReportExporter(config).export(builder.flush());
+      builder.flush();
+      new ReportExporter(config).export(builder.getRecords());
       progress.setValue(1);
     } catch (Exception e) {
       fileSource.destroy();
