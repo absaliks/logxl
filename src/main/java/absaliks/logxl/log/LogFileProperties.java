@@ -22,5 +22,5 @@ public interface LogFileProperties {
   String TIMESTAMP_PATTERN = "yyyy.MM.dd_HH:mm:ss";
   char COLUMNS_SEPARATOR = ';';
   char DECIMAL_SEPARATOR = ',';
-  int COLUMNS_COUNT = 34;
+  int COLUMNS_COUNT = 35; // overall CSV file columns count (including timestamp)
 }

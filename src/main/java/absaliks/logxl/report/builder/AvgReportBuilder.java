@@ -101,8 +101,11 @@ public class AvgReportBuilder extends ReportBuilder {
       for (int i = 0; i < valuesCount; i++) {
         result.values[i] += rec.values[i];
       }
-      if (rec.isHeatingOn && !result.isHeatingOn) {
-        result.isHeatingOn = true;
+      if (rec.isHeatingCableOn) {
+        result.isHeatingCableOn = true;
+      }
+      if (rec.isHeatingElementOn) {
+        result.isHeatingElementOn = true;
       }
     }
     for (int i = 0; i < valuesCount; i++) {

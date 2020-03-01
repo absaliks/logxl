@@ -44,18 +44,18 @@ class ReportExporter {
 
   private static final Logger log = Logger.getLogger(ReportExporter.class.getName());
 
+  private static final String TEMPLATE_FILE = "template.xlsx";
+  private static final File OUTPUT_FILE = new File("report.xlsx");
   private static final int ROW_OFFSET = 8;
-  private static final File FILE = new File("report.xlsx");
   private static final Byte[] VALUES_DECIMAL_PLACES = {
       2, 2, 2, 2, 2, 2, 1, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 2, 1, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2
   };
 
-  private final Map<Byte, CellStyle> DATA_ROUND_STYLES = new HashMap<>(3);
-
   private final Config config;
   private SXSSFWorkbook workbook;
-  private CellStyle heatingStyle;
+  private CellStyle borderedCellStyle;
   private CellStyle dateStyle;
+  private Map<Byte, CellStyle> floatRoundStyles;
 
   ReportExporter(Config config) {
     this.config = config;
@@ -65,29 +65,38 @@ class ReportExporter {
     Validate.notEmpty(records, "Результат пустой, нечего выгружать");
     deleteReportFile();
 
-    log.info("Выгружаю отчет в файл " + FILE.getAbsolutePath());
+    log.info("Выгружаю отчет в файл " + OUTPUT_FILE.getAbsolutePath());
 
-    InputStream stream = ReportExporter.class.getClassLoader().getResourceAsStream("template.xlsx");
-    XSSFWorkbook template = new XSSFWorkbook(stream);
+    XSSFWorkbook template = new XSSFWorkbook(getTemplateFileStream());
     fillMetaData(template.getSheetAt(0));
     this.workbook = new SXSSFWorkbook(template, 100);
     Sheet sheet = this.workbook.getSheetAt(0);
-    createDataStyles();
-    createDateStyle();
-    heatingStyle = createDataStyle();
+    floatRoundStyles = createFloatRoundStyles();
+    dateStyle = createDateStyle();
+    borderedCellStyle = createBorderedCellStyle();
     for (int i = 0; i < records.size(); i++) {
       Row row = sheet.createRow(i + ROW_OFFSET);
       Record rec = records.get(i);
       addDateCell(rec, row);
       addMeasurementsCells(rec.values, row);
-      addHeatingCells(rec.isHeatingOn, row);
+      addBooleanCell(rec.isHeatingCableOn, row, 32);
+      addBooleanCell(rec.isHeatingElementOn, row, 33);
     }
 
-    FileOutputStream out = new FileOutputStream(FILE);
+    FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
     this.workbook.write(out);
     out.close();
 
     this.workbook.dispose();
+  }
+
+  private InputStream getTemplateFileStream() {
+    InputStream stream = ReportExporter.class.getClassLoader().getResourceAsStream(TEMPLATE_FILE);
+    if (stream == null) {
+      log.severe("Template file not found " + TEMPLATE_FILE);
+      throw new RuntimeException("Шаблон для выгрузки не найден: " + TEMPLATE_FILE);
+    }
+    return stream;
   }
 
   private void fillMetaData(Sheet sheet) {
@@ -102,9 +111,10 @@ class ReportExporter {
     return cell != null ? cell : row.createCell(3);
   }
 
-  private void createDataStyles() {
+  private Map<Byte, CellStyle> createFloatRoundStyles() {
+    final Map<Byte, CellStyle> styles = new HashMap<>(3);
     for (byte i = 1; i <= 3; i++) {
-      CellStyle dataStyle = createDataStyle();
+      CellStyle dataStyle = createBorderedCellStyle();
       String format;
       switch (i) {
         case 1:
@@ -120,11 +130,12 @@ class ReportExporter {
           throw new IllegalStateException();
       }
       dataStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
-      DATA_ROUND_STYLES.put(i, dataStyle);
+      styles.put(i, dataStyle);
     }
+    return styles;
   }
 
-  private CellStyle createDataStyle() {
+  private CellStyle createBorderedCellStyle() {
     CellStyle style = workbook.createCellStyle();
     style.setBorderBottom(BorderStyle.THIN);
     style.setBorderLeft(BorderStyle.THIN);
@@ -132,13 +143,14 @@ class ReportExporter {
     return style;
   }
 
-  private void createDateStyle() {
-    dateStyle = workbook.createCellStyle();
+  private CellStyle createDateStyle() {
+    CellStyle style = workbook.createCellStyle();
     String excelFormatPattern = DateFormatConverter.convert(Locale.US, getDateFormat());
     DataFormat poiFormat = workbook.createDataFormat();
-    dateStyle.setDataFormat(poiFormat.getFormat(excelFormatPattern));
-    dateStyle.setBorderBottom(BorderStyle.THIN);
-    dateStyle.setBorderLeft(BorderStyle.THIN);
+    style.setDataFormat(poiFormat.getFormat(excelFormatPattern));
+    style.setBorderBottom(BorderStyle.THIN);
+    style.setBorderLeft(BorderStyle.THIN);
+    return style;
   }
 
   private String getDateFormat() {
@@ -150,9 +162,9 @@ class ReportExporter {
   }
 
   static void deleteReportFile() throws IOException {
-    if (FILE.exists()) {
-      if (!FILE.delete()) {
-        throw new IOException("Не могу удалить файл " + FILE.getAbsolutePath());
+    if (OUTPUT_FILE.exists()) {
+      if (!OUTPUT_FILE.delete()) {
+        throw new IOException("Не могу удалить файл " + OUTPUT_FILE.getAbsolutePath());
       }
     }
   }
@@ -167,13 +179,13 @@ class ReportExporter {
     for (int i = 0; i < values.length; i++) {
       Cell cell = row.createCell(i + 1);
       cell.setCellValue(values[i]);
-      cell.setCellStyle(DATA_ROUND_STYLES.get(VALUES_DECIMAL_PLACES[i]));
+      cell.setCellStyle(floatRoundStyles.get(VALUES_DECIMAL_PLACES[i]));
     }
   }
 
-  private void addHeatingCells(boolean isHeatingOn, Row row) {
-    Cell cell = row.createCell(32);
-    cell.setCellValue(isHeatingOn ? "ВКЛ" : "ВЫКЛ");
-    cell.setCellStyle(heatingStyle);
+  private void addBooleanCell(boolean value, Row row, int columnNumber) {
+    final Cell cell = row.createCell(columnNumber);
+    cell.setCellValue(value ? "ВКЛ" : "ВЫКЛ");
+    cell.setCellStyle(borderedCellStyle);
   }
 }

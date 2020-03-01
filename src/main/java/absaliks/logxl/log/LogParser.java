@@ -21,6 +21,7 @@ package absaliks.logxl.log;
 import static absaliks.logxl.log.LogFileProperties.COLUMNS_SEPARATOR;
 import static absaliks.logxl.log.LogFileProperties.DECIMAL_SEPARATOR;
 import static absaliks.logxl.log.LogFileProperties.TIMESTAMP_PATTERN;
+import static java.lang.StrictMath.abs;
 import static java.util.Objects.nonNull;
 
 import absaliks.logxl.config.Config;
@@ -69,8 +70,8 @@ public class LogParser {
     }
   }
 
-  private ArrayList<Record> parseDataTable(BufferedReader reader) throws IOException {
-    ArrayList<Record> records = new ArrayList<>(approxLinesCount);
+  private List<Record> parseDataTable(BufferedReader reader) throws IOException {
+    List<Record> records = new ArrayList<>(approxLinesCount);
     String line;
     while (nonNull(line = reader.readLine())) {
       if (!isDataTableFound && !(isDataTableFound = isDataLine(line))) {
@@ -99,21 +100,22 @@ public class LogParser {
 
   private Record parseDataLine(String line) {
     try {
-      String[] fields = StringUtils.splitPreserveAllTokens(line, COLUMNS_SEPARATOR);
-      LocalDateTime datetime = parseDateTime(fields[0]);
+      final String[] fields = StringUtils.splitPreserveAllTokens(line, COLUMNS_SEPARATOR);
+      final LocalDateTime datetime = parseDateTime(fields[0]);
       if (datetime.isBefore(config.dateFrom) || datetime.isAfter(config.dateTo)) {
         log.log(Level.FINE, "Skipping line that outside of time period: {}", line);
         return null;
       }
 
-      Record r = new Record();
+      final Record r = new Record();
       r.datetime = datetime;
       r.values = new float[VALUE_FIELDS.length];
       for (int i = 0; i < VALUE_FIELDS.length; i++) {
-        int fieldIx = VALUE_FIELDS[i];
-        r.values[i] = Float.parseFloat(fields[fieldIx].replace(DECIMAL_SEPARATOR, '.'));
+        final int fieldIx = VALUE_FIELDS[i];
+        r.values[i] = parseFloat(fields[fieldIx]);
       }
-      r.isHeatingOn = Float.parseFloat(fields[33].replace(DECIMAL_SEPARATOR, '.')) != 0;
+      r.isHeatingCableOn = isNonZero(parseFloat(fields[33]));
+      r.isHeatingElementOn = isNonZero(parseFloat(fields[34]));
       return r;
     } catch (Exception e) {
       log.severe("Failed to parse line: " + line);
@@ -126,5 +128,13 @@ public class LogParser {
 
   private LocalDateTime parseDateTime(String field) {
     return FORMATTER.parse(field, LocalDateTime::from);
+  }
+
+  private float parseFloat(String stringValue) {
+    return Float.parseFloat(stringValue.replace(DECIMAL_SEPARATOR, '.'));
+  }
+
+  private boolean isNonZero(float value) {
+    return abs(value) >= 0.000001;
   }
 }

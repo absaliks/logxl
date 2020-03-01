@@ -33,20 +33,34 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 class LogParserTest {
 
   private static final String DATATABLE_HEADER = "Timestamp;";
-  private static final String GIVEN_CSV = String.join(System.lineSeparator(), asList(
+  private static final List<String> LINES = asList(
       DATATABLE_HEADER,
-      "2018.02.14_12:05:15;3,5;-2,96;24,00;-25;-24,98;-24,00;-25.4;-25;44;1;2;3;4;5;6;7;8;9;0;-1;-2;-3;-4;-5;-6;-7;-8;-9;-10;10;-11;12;15.55",
-      "2018.06.02_15:02:07;-16;-15;-14;-13;-12;-11;-10;-9;-8;-7;-6;-5;-4;-3;-2;-1;000;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16"
-  ));
+      "2018.02.14_12:05:15;3,5;-2,96;24,00;-25;-24,98;-24,00;-25.4;-25;44;1;2;3;4;5;6;7;8;9;0;-1;-2;-3;-4;-5;-6;-7;-8;-9;-10;10;-11;12;0;0.5",
+      "2018.06.02_15:02:07;-16;-15;-14;-13;-12;-11;-10;-9;-8;-7;-6;-5;-4;-3;-2;-1;000;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;1;0"
+  );
+  private static final String GIVEN_CSV = String.join(System.lineSeparator(), LINES);
+
+  @Test
+  void datasourceCheck() {
+    for (int i = 1; i < LINES.size(); i++) {
+      final String line = LINES.get(i);
+      String[] columns = StringUtils.split(line, ";");
+      try {
+        assertEquals(COLUMNS_COUNT, columns.length);
+      } catch (AssertionError e) {
+        throw new AssertionError("Columns count mismatch in line " + i + ": " + e.getMessage());
+      }
+    }
+  }
 
   @Test
   void parse() throws IOException {
-    // FIXME
     assertEquals(createExpectedRecordList(), parse(GIVEN_CSV));
   }
 
@@ -54,12 +68,16 @@ class LogParserTest {
     Record rec1 = new Record();
     rec1.datetime = LocalDateTime.of(2018, 2, 14, 12, 5, 15);
     rec1.values = new float[]{3.5f, -2.96f, 24, -25, -24.98f, -24, -25.4f, -25, 44,
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, 10, -11, 12, 15.55f};
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -2, -3, -4, -5, -6, -9, -7, -8, -10, 10, -11, 12};
+    rec1.isHeatingCableOn = false;
+    rec1.isHeatingElementOn = true;
 
     Record rec2 = new Record();
     rec2.datetime = LocalDateTime.of(2018, 6, 2, 15, 2, 7);
     rec2.values = new float[]{-16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3,
-        -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+        -2, -1, 0, 1, 2, 4, 5, 6, 7, 8, 11, 9, 10, 12, 13, 14, 15};
+    rec2.isHeatingCableOn = true;
+    rec2.isHeatingElementOn = false;
     return asList(rec1, rec2);
   }
 
@@ -83,7 +101,8 @@ class LogParserTest {
     expectedRecord.datetime = expectedTimestamp.truncatedTo(ChronoUnit.SECONDS);
     expectedRecord.values = new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
         18, 19, 21, 22, 23, 24, 25, 28, 26, 27, 29, 30, 31, 32};
-    expectedRecord.isHeatingOn = true;
+    expectedRecord.isHeatingCableOn = true;
+    expectedRecord.isHeatingElementOn = true;
 
     assertEquals(singletonList(expectedRecord), parse(csvBuilder.toString()));
   }

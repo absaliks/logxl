@@ -25,7 +25,18 @@ import java.util.Objects;
 public class Record {
   public LocalDateTime datetime;
   public float[] values;
-  public boolean isHeatingOn;
+  public boolean isHeatingCableOn;
+  public boolean isHeatingElementOn;
+
+  @Override
+  public String toString() {
+    return "Record{" +
+        "datetime=" + datetime +
+        ", values=" + Arrays.toString(values) +
+        ", isHeatingCableOn=" + isHeatingCableOn +
+        ", isHeatingElementOn=" + isHeatingElementOn +
+        '}';
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -36,14 +47,15 @@ public class Record {
       return false;
     }
     Record record = (Record) o;
-    return isHeatingOn == record.isHeatingOn &&
-        Objects.equals(datetime, record.datetime) &&
+    return isHeatingCableOn == record.isHeatingCableOn &&
+        isHeatingElementOn == record.isHeatingElementOn &&
+        datetime.equals(record.datetime) &&
         Arrays.equals(values, record.values);
   }
 
   @Override
   public int hashCode() {
-    int result = Objects.hash(datetime, isHeatingOn);
+    int result = Objects.hash(datetime, isHeatingCableOn, isHeatingElementOn);
     result = 31 * result + Arrays.hashCode(values);
     return result;
   }
