@@ -7,7 +7,7 @@
 
   <groupId>absaliks</groupId>
   <artifactId>logxl</artifactId>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.11</version>
 
   <name>logxl</name>
   <url>https://github.com/absaliks/logxl</url>
@@ -88,28 +88,28 @@
           <include>**/*.fxml</include>
         </includes>
       </resource>
+      <resource>
+        <directory>.</directory>
+        <includes>
+          <include>launch4j.xml</include>
+        </includes>
+        <filtering>true</filtering>
+        <targetPath>${project.build.directory}</targetPath>
+      </resource>
     </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <configuration>
-          <mainClass>${main.class}</mainClass>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.2.0</version>
         <configuration>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -129,6 +129,28 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>install</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>java</executable>
+          <basedir>${project.build.directory}</basedir>
+          <arguments>
+            <argument>-jar</argument>
+            <argument>${env.LAUNCH4J_HOME}/launch4j.jar</argument>
+            <argument>launch4j.xml</argument>
+          </arguments>
+        </configuration>
       </plugin>
     </plugins>
   </build>
