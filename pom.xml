@@ -7,7 +7,7 @@
 
   <groupId>absaliks</groupId>
   <artifactId>logxl</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.9-SNAPSHOT</version>
 
   <name>logxl</name>
   <url>https://github.com/absaliks/logxl</url>
@@ -15,7 +15,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.class>absaliks.logxl.Main</main.class>
-    <java.version>11</java.version>
+    <java.version>1.8</java.version>
   </properties>
 
   <dependencies>
@@ -95,7 +95,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
-          <release>${java.version}</release>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
       <plugin>
